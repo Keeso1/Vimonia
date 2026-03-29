@@ -1,5 +1,4 @@
 ./bin/
 ./obj/
-/obj/Debug/net10.0
-/obj/Debug/net10.0
-/bin/Debug/net10.0
+/obj/
+/bin/
