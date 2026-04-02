@@ -1,14 +1,20 @@
-﻿internal class Program
+﻿using Sharpie;
+using Sharpie.Backend;
+
+internal class Program
 {
     private static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
-        var input = new InputHandler();
-        while (true)
+        var backend = CursesBackend.Load();
+        using var terminal = new Terminal(backend, new TerminalOptions(UseMouse: false));
+
+        terminal.Screen.DrawBorder();
+        terminal.Screen.Refresh();
+
+        foreach (var @event in terminal.Events.Listen(terminal.Screen))
         {
-            var inputKey = input.WaitForInput();
-            Console.WriteLine(inputKey);
-            Thread.Sleep(16);
+            if (@event is KeyEvent)
+                break;
         }
     }
 }
