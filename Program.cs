@@ -1,26 +1,59 @@
-﻿using Sharpie;
+﻿using System.Drawing;
+using Sharpie;
+using Sharpie.Abstractions;
 using Sharpie.Backend;
 
-internal class Program
-{
-    private static void Main(string[] args)
+var terminal = new Terminal(
+    CursesBackend.Load(),
+    new TerminalOptions(UseColors: true, CaretMode: CaretMode.Invisible, UseMouse: false)
+);
+
+terminal.Repeat(
+    t =>
     {
-        var backend = CursesBackend.Load();
-        using var terminal = new Terminal(
-            backend,
-            new TerminalOptions(UseMouse: false, SuppressControlKeys: false)
-        );
+        t.Screen.Refresh();
+        return Task.CompletedTask;
+    },
+    100
+);
 
-        terminal.Screen.DrawBorder();
-        terminal.Screen.Refresh();
+var prevPosition = new Point(terminal.Screen.Size.Width / 2, terminal.Screen.Size.Height / 2);
+var position = new Point(terminal.Screen.Size.Width / 2, terminal.Screen.Size.Height / 2);
 
-        foreach (var @event in terminal.Events.Listen(terminal.Screen))
+terminal.Run(
+    (Term, Tevent) =>
+    {
+        switch (Tevent)
         {
-            terminal.Screen.WriteText($"{@event}\n");
-            if (@event is KeyEvent { Char.Value: 'c' })
-            {
+            case KeyEvent { Char.Value: 'q' }:
+                Environment.Exit(0);
                 break;
-            }
+            case KeyEvent { Char.Value: 'h' }:
+                position = prevPosition with { X = prevPosition.X - 1 };
+                Term.Screen.DrawCell(prevPosition, new System.Text.Rune(' '), new Style());
+                Term.Screen.DrawCell(position, new System.Text.Rune('h'), new Style());
+                prevPosition = position;
+                break;
+            case KeyEvent { Char.Value: 'j' }:
+                position = prevPosition with { Y = prevPosition.Y + 1 };
+                Term.Screen.DrawCell(prevPosition, new System.Text.Rune(' '), new Style());
+                Term.Screen.DrawCell(position, new System.Text.Rune('h'), new Style());
+                prevPosition = position;
+                break;
+            case KeyEvent { Char.Value: 'k' }:
+                position = prevPosition with { Y = prevPosition.Y - 1 };
+                Term.Screen.DrawCell(prevPosition, new System.Text.Rune(' '), new Style());
+                Term.Screen.DrawCell(position, new System.Text.Rune('h'), new Style());
+                prevPosition = position;
+                break;
+            case KeyEvent { Char.Value: 'l' }:
+                position = prevPosition with { X = prevPosition.X + 1 };
+                Term.Screen.DrawCell(prevPosition, new System.Text.Rune(' '), new Style());
+                Term.Screen.DrawCell(position, new System.Text.Rune('h'), new Style());
+                prevPosition = position;
+                break;
         }
+        ;
+        return Task.FromResult(true);
     }
-}
+);
