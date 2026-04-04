@@ -22,19 +22,41 @@ public sealed class GameState(ILogger logger, Style playerBody)
         right,
     }
 
+    public bool InBounds(Point pos)
+    {
+        bool isInboundsX = pos.X > 0 && pos.X + 1 < Canvas.Size.Width;
+        bool isInboundsY = pos.Y > 0 && pos.Y + 1 < Canvas.Size.Height;
+        return isInboundsX && isInboundsY;
+    }
+
     public void Update(Direction? direction)
     {
-        // if(prevPosition != null)
-        // {
-        //
-        // }
-        //
         Point position = direction switch
         {
-            Direction.down => PrevPosition with { Y = PrevPosition.Y + 1 },
-            Direction.up => PrevPosition with { Y = PrevPosition.Y - 1 },
-            Direction.left => PrevPosition with { X = PrevPosition.X - 1 },
-            Direction.right => PrevPosition with { X = PrevPosition.X + 1 },
+            Direction.down => InBounds(PrevPosition with { Y = PrevPosition.Y + 1 })
+                ? PrevPosition with
+                {
+                    Y = PrevPosition.Y + 1,
+                }
+                : PrevPosition,
+            Direction.up => InBounds(PrevPosition with { Y = PrevPosition.Y - 1 })
+                ? PrevPosition with
+                {
+                    Y = PrevPosition.Y - 1,
+                }
+                : PrevPosition,
+            Direction.left => InBounds(PrevPosition with { X = PrevPosition.X - 1 })
+                ? PrevPosition with
+                {
+                    X = PrevPosition.X - 1,
+                }
+                : PrevPosition,
+            Direction.right => InBounds(PrevPosition with { X = PrevPosition.X + 1 })
+                ? PrevPosition with
+                {
+                    X = PrevPosition.X + 1,
+                }
+                : PrevPosition,
             _ => PrevPosition,
         };
 
