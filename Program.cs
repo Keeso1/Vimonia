@@ -126,7 +126,8 @@ public class CustomFileLogger : ILogger
         _logFileWriter = logFileWriter;
     }
 
-    public IDisposable BeginScope<TState>(TState state)
+    public IDisposable? BeginScope<TState>(TState state)
+        where TState : notnull
     {
         return null;
     }
@@ -134,15 +135,15 @@ public class CustomFileLogger : ILogger
     public bool IsEnabled(LogLevel logLevel)
     {
         // Ensure that only information level and higher logs are recorded
-        return logLevel >= LogLevel.Information;
+        return logLevel is not LogLevel.None && logLevel >= LogLevel.Information;
     }
 
     public void Log<TState>(
         LogLevel logLevel,
         EventId eventId,
         TState state,
-        Exception exception,
-        Func<TState, Exception, string> formatter
+        Exception? exception,
+        Func<TState, Exception?, string> formatter
     )
     {
         // Ensure that only information level and higher logs are recorded
@@ -156,6 +157,10 @@ public class CustomFileLogger : ILogger
 
         //Write log messages to text file
         _logFileWriter.WriteLine($"[{logLevel}] [{_categoryName}] {message}");
+        if (exception is not null)
+        {
+            _logFileWriter.WriteLine(exception);
+        }
         _logFileWriter.Flush();
     }
 }
