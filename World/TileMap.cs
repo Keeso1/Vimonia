@@ -33,8 +33,8 @@ public class TileMap
 	protected void Set(int x, int y, Tile tile) => Tiles[x, y] = tile;
 
 	/// <summary>
-	/// Overload for looping over tuples, ex. a line across the room
-	/// looping over tuples can be achieved by <c> GetCanvasCoords.GetLine() </c> helper function
+	/// Overload for looping over tuples, ex. a line across the room.
+	/// Looping over tuples can be achieved by <c> GetCanvasCoords.GetVerticalLine() </c> or <c> GetCanvasCoords.GetHorizontalLine() </c> helper functions
 	/// </summary>
 	protected void Set(IEnumerable<(int x, int y)> coords, Tile tile)
 	{
