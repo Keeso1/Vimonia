@@ -8,22 +8,19 @@ namespace RogueConsole.World;
 
 public class TileMap
 {
+    public static Tile[,] Tiles { get; private set; }
+    public Canvas Canvas { get; init; }
+    public bool Active { get; set; }
 
-	public int Width { get; private set; }
-	public int Height { get; private set; }
-	protected Tile[,] Tiles { get; private set; }
-	protected Canvas Canvas { get; init; }
+    public TileMap(Canvas canvas)
+    {
+        Canvas = canvas;
+        InitMap();
 
-	public TileMap(int width, int height, Canvas canvas)
-	{
-		Width = width;
-		Height = height;
-		Canvas = canvas;
-		Tiles = new Tile[Width, Height];
-		InitMap();
+        GameState.OnTick += Update;
+    }
 
-		GameState.OnTick += Update;
-	}
+    public Tile Get(int x, int y) => Tiles[x, y];
 
 	public Tile Get(int x, int y) => Tiles[x, y];
 
@@ -78,8 +75,8 @@ public class TileMap
 				Canvas.Glyph(new Point(w, h), Tiles[w, h].Glyph, Style.Default);
 	}
 
-	public void Update()
-	{
-		Render();
-	}
+    public void Update()
+    {
+        Render();
+    }
 }

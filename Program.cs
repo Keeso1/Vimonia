@@ -1,11 +1,9 @@
 ﻿using System.Drawing;
-using System.Text;
 using Microsoft.Extensions.Logging;
-using RogueConsole.Assets;
 using RogueConsole.Core;
 using RogueConsole.World.Maps;
+using RogueConsole.Enums;
 using Sharpie;
-using Sharpie.Abstractions;
 using Sharpie.Backend;
 
 //Define the path to the text file
@@ -13,17 +11,18 @@ string logFilePath = "console_log.txt";
 
 //Create a StreamWriter to write logs to a text file
 using StreamWriter logFileWriter = new StreamWriter(logFilePath, append: true);
+GameSettings settings = new() { NumberOfRooms = 7 }; //grid size 16x16, no way to overshoot index
 
 //Create an ILoggerFactory
 ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
 {
     //Add console output
-    builder.AddSimpleConsole(options =>
-    {
-        options.IncludeScopes = true;
-        options.SingleLine = true;
-        options.TimestampFormat = "HH:mm:ss ";
-    });
+    // builder.AddSimpleConsole(options =>
+    // {
+    //     options.IncludeScopes = true;
+    //     options.SingleLine = true;
+    //     options.TimestampFormat = "HH:mm:ss ";
+    // });
 
     //Add a custom log provider to write logs to text files
     builder.AddProvider(new CustomFileLoggerProvider(logFileWriter));
@@ -41,13 +40,22 @@ Canvas canvas = new(terminal.Screen.Size);
 var room = new ItemRoom(canvas.Size.Width, canvas.Size.Height, canvas);
 room.Render();
 
+FloorLayout floor = new(logger, canvas);
+for (var room = 0; room < settings.NumberOfRooms; room++)
+{
+    floor.Generate(canvas);
+    logger.LogInformation("Run nr {room}", room);
+    logger.LogInformation("Rooms: {rooms}", FloorLayout.RoomsToString(floor.Rooms));
+}
+
 var game = new GameState(
     logger,
     new()
     {
         Attributes = VideoAttribute.Bold,
         ColorMixture = terminal.Colors.MixColors(StandardColor.Magenta, StandardColor.Black),
-    }
+    },
+    floor
 )
 {
     Canvas = canvas,
@@ -79,17 +87,16 @@ terminal.Run(
                 Environment.Exit(0);
                 break;
             case KeyEvent { Char.Value: 'h' }:
-                game.Update(GameState.Direction.left);
+                game.Update(Direction.left);
                 break;
-
             case KeyEvent { Char.Value: 'j' }:
-                game.Update(GameState.Direction.down);
+                game.Update(Direction.down);
                 break;
             case KeyEvent { Char.Value: 'k' }:
-                game.Update(GameState.Direction.up);
+                game.Update(Direction.up);
                 break;
             case KeyEvent { Char.Value: 'l' }:
-                game.Update(GameState.Direction.right);
+                game.Update(Direction.right);
                 break;
         }
         ;
