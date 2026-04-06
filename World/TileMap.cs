@@ -1,28 +1,40 @@
 using System.Drawing;
 using RogueConsole.Core;
+using RogueConsole.Enums;
 using RogueConsole.Entities;
 using RogueConsole.Utils;
 using Sharpie;
+using RogueConsole.World.Maps;
+using Microsoft.Extensions.Logging;
 
 namespace RogueConsole.World;
 
 public class TileMap
 {
-    public static Tile[,] Tiles { get; private set; }
-    public Canvas Canvas { get; init; }
-    public bool Active { get; set; }
+	public Tile[,] Tiles { get; private set; }
+	public Canvas Canvas { get; init; }
+	public bool Active { get; set; }
+	public RoomTypes RoomType { get; set; }
 
-    public TileMap(Canvas canvas)
-    {
-        Canvas = canvas;
-        InitMap();
+	public TileMap(Canvas canvas)
+	{
+		Canvas = canvas;
 
-        GameState.OnTick += Update;
-    }
+		// GameState.OnTick += Update;
+	}
 
-    public Tile Get(int x, int y) => Tiles[x, y];
+
+	// public TileMap(Canvas canvas, RoomTypes type = RoomTypes.Normal)
+	// {
+	// 	RoomType = RoomTypes.Normal;
+	// 	Canvas = canvas;
+	// 	InitMap();
+	//
+	// 	GameState.OnTick += Update;
+	// }
 
 	public Tile Get(int x, int y) => Tiles[x, y];
+
 
 	///<summary>
 	///Simple set function. Set tile at x and y to specific <c>Tile</c>.
@@ -45,22 +57,23 @@ public class TileMap
 	///</summary>
 	protected void Set((int x, int y) coord, Tile tile) => Tiles[coord.x, coord.y] = tile;
 
-	public bool InBounds(int x, int y) => x >= 0 && y >= 0 && x < Width && y < Height;
+	public bool InBounds(int x, int y) => x >= 0 && y >= 0 && x < Canvas.Size.Width && y < Canvas.Size.Height;
 	public bool IsWalkable(int x, int y) => InBounds(x, y) && Tiles[x, y].Walkable;
 
 	protected void Fill()
 	{
-		for (int w = 0; w < Width; w++)
+		for (int w = 0; w < Canvas.Size.Width; w++)
 		{
-			for (int h = 0; h < Height; h++)
+			for (int h = 0; h < Canvas.Size.Height; h++)
 			{
 				Set(w, h, Tile.Floor);
 			}
 		}
 	}
 
-	protected virtual void InitMap()
+	public virtual void InitMap()
 	{
+		Tiles = new Tile[Canvas.Size.Width, Canvas.Size.Height];
 		Fill();
 		Set(GetCanvasCoords.GetVerticalLine(0, 0, Canvas.Size.Height), Tile.Wall);
 		Set(GetCanvasCoords.GetVerticalLine(Canvas.Size.Width - 1, 0, Canvas.Size.Height), Tile.Wall);
@@ -68,15 +81,38 @@ public class TileMap
 		Set(GetCanvasCoords.GetHorizontalLine(Canvas.Size.Height - 1, 0, Canvas.Size.Width), Tile.Wall);
 	}
 
-	public void Render()
+	public void RenderToCanvas(ILogger logger)
 	{
-		for (int w = 0; w < Width; w++)
-			for (int h = 0; h < Height; h++)
+
+		logger.LogInformation("Hello from render to canvas");
+		logger.LogInformation("Canvas?... {c}", Canvas != null);
+		logger.LogInformation("Tiles ? Hello? {t}", Tiles != null);
+		for (int w = 0; w < Canvas.Size.Width; w++)
+		{
+			logger.LogInformation(" Isac är söt : {w} \n Size.Width: {size}", w, Canvas.Size.Width);
+			for (int h = 0; h < Canvas.Size.Height; h++)
+			{
+				logger.LogInformation("Inner Loop: {h}", h);
+				logger.LogInformation("Tiles w: {w}", Tiles[w, h]);
 				Canvas.Glyph(new Point(w, h), Tiles[w, h].Glyph, Style.Default);
+			}
+		}
+
+		logger.LogInformation("I am done in render to canvas!");
 	}
 
-    public void Update()
-    {
-        Render();
-    }
+	// public void Update()
+	// {
+	// 	// RenderToCanvas();
+	// }
+
+	public static TileMap GetRoom(RoomTypes type, Canvas canvas, ILogger logger) => type switch
+	{
+		RoomTypes.Spawn => new SpawnRoom(canvas),
+		RoomTypes.Normal => new NormalMap(canvas),
+		RoomTypes.Item => new ItemRoom(canvas, logger),
+		_ => new TileMap(canvas)
+
+	};
+
 }

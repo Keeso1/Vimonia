@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using RogueConsole.World;
+using RogueConsole.Enums;
 using Sharpie;
 
 public class FloorLayout
@@ -14,7 +15,8 @@ public class FloorLayout
     public FloorLayout(ILogger Logger, Canvas canvas)
     {
         _logger = Logger;
-        Rooms[8, 8] = new(canvas) { Active = true };
+        Rooms[8, 8] = TileMap.GetRoom(RoomTypes.Spawn, canvas, _logger);
+        Rooms[8, 8].InitMap();
     }
 
     public static string RoomsToString(TileMap[,] Rooms) //Helper func to see the grid in a clean way
