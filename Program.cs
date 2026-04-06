@@ -10,7 +10,7 @@ string logFilePath = "console_log.txt";
 
 //Create a StreamWriter to write logs to a text file
 using StreamWriter logFileWriter = new StreamWriter(logFilePath, append: true);
-GameSettings settings = new() { NumberOfRooms = 8 };
+GameSettings settings = new() { NumberOfRooms = 7 }; //grid size 16x16, no way to overshoot index
 
 //Create an ILoggerFactory
 ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
@@ -37,10 +37,11 @@ var terminal = new Terminal(
 
 Canvas canvas = new(terminal.Screen.Size);
 
-FloorLayout floor = new(logger);
+FloorLayout floor = new(logger, canvas);
 for (var room = 0; room < settings.NumberOfRooms; room++)
 {
-    floor.Generate();
+    floor.Generate(canvas);
+    logger.LogInformation("Run nr {room}", room);
     logger.LogInformation("Rooms: {rooms}", FloorLayout.RoomsToString(floor.Rooms));
 }
 
@@ -51,7 +52,7 @@ var game = new GameState(
         Attributes = VideoAttribute.Bold,
         ColorMixture = terminal.Colors.MixColors(StandardColor.Magenta, StandardColor.Black),
     },
-    floor.Rooms
+    floor
 )
 {
     Canvas = canvas,
