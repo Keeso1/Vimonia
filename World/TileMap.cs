@@ -1,6 +1,7 @@
 using System.Drawing;
 using RogueConsole.Core;
 using RogueConsole.Entities;
+using RogueConsole.Utils;
 using Sharpie;
 
 namespace RogueConsole.World;
@@ -63,15 +64,11 @@ public class TileMap
 
 	protected virtual void InitMap()
 	{
-
-		Tiles = new Tile[Width, Height];
-		for (int w = 0; w < Width; w++)
-		{
-			for (int h = 0; h < Height; h++)
-			{
-				Set(w, h, Tile.Floor);
-			}
-		}
+		Fill();
+		Set(GetCanvasCoords.GetVerticalLine(0, 0, Canvas.Size.Height), Tile.Wall);
+		Set(GetCanvasCoords.GetVerticalLine(Canvas.Size.Width - 1, 0, Canvas.Size.Height), Tile.Wall);
+		Set(GetCanvasCoords.GetHorizontalLine(1, 0, Canvas.Size.Width), Tile.Wall);
+		Set(GetCanvasCoords.GetHorizontalLine(Canvas.Size.Height - 1, 0, Canvas.Size.Width), Tile.Wall);
 	}
 
 	public void Render()

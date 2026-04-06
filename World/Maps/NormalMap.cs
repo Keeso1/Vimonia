@@ -7,11 +7,7 @@ public class NormalMap(int width, int height, Canvas canvas) : TileMap(width, he
 {
 	protected override void InitMap()
 	{
-		Fill();
-		Set(GetCanvasCoords.GetVerticalLine(0, 0, Canvas.Size.Height), Tile.Wall);
-		Set(GetCanvasCoords.GetVerticalLine(Canvas.Size.Width - 1, 0, Canvas.Size.Height), Tile.Wall);
-		Set(GetCanvasCoords.GetHorizontalLine(1, 0, Canvas.Size.Width), Tile.Wall);
-		Set(GetCanvasCoords.GetHorizontalLine(Canvas.Size.Height - 1, 0, Canvas.Size.Width), Tile.Wall);
+		base.InitMap();
 		var (g1, g2) = GetCanvasCoords.GetCanvasTopCenter(Canvas);
 		var (g3, g4) = GetCanvasCoords.GetCanvasBottomCenter(Canvas);
 		Set((g1, g2 + 2), Tile.Goblin);
