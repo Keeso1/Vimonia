@@ -1,4 +1,4 @@
 public class GameSettings
 {
-    public int NumberOfRooms { get; set; }
+    public int NumberOfRooms { get; init; }
 }

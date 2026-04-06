@@ -43,7 +43,6 @@ for (var room = 0; room < settings.NumberOfRooms; room++)
     floor.Generate();
     logger.LogInformation("Rooms: {rooms}", FloorLayout.RoomsToString(floor.Rooms));
 }
-;
 
 var game = new GameState(
     logger,
