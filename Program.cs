@@ -38,7 +38,7 @@ var terminal = new Terminal(
 );
 
 Canvas canvas = new(terminal.Screen.Size);
-var room = new NormalMap(canvas.Size.Width, canvas.Size.Height, canvas);
+var room = new ItemRoom(canvas.Size.Width, canvas.Size.Height, canvas);
 room.Render();
 
 var game = new GameState(
