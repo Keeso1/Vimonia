@@ -38,7 +38,6 @@ public sealed class GameState(ILogger logger, Style playerBody, FloorLayout floo
         };
 
         floorLayout.Rooms[8, 8].RenderToCanvas(logger);
-        Canvas.Glyph(PrevPosition, Assets.Assets.Space, Style.Default);
         Canvas.Glyph(position, Assets.Assets.Player, playerBody);
         PrevPosition = position;
     }
