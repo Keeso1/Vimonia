@@ -1,16 +1,14 @@
-
-using RogueConsole.Utils;
 using RogueConsole.Enums;
+using RogueConsole.Utils;
 using Sharpie;
 
 namespace RogueConsole.World.Maps;
 
 public class SpawnRoom(Canvas canvas) : TileMap(canvas)
 {
-	public override void InitMap()
-	{
-		Active = true;
-		RoomType = RoomTypes.Spawn;
-		base.InitMap();
-	}
+    public override void InitMap()
+    {
+        RoomType = RoomTypes.Spawn;
+        base.InitMap();
+    }
 }
