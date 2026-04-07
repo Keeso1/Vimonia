@@ -15,6 +15,7 @@ public class Tile
 	public static Tile Wall => new() { Glyph = Assets.Wall };
 	public static Tile Goblin => new() { Glyph = Assets.Enemy, Entity = new Goblin(100, 100) };
 	public static Tile Player => new() { Glyph = Assets.Player };
+	public static Tile Chest => new() { Glyph = Assets.Item };
 }
 
 

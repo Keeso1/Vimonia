@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using Microsoft.Extensions.Logging;
 using RogueConsole.Core;
+using RogueConsole.World.Maps;
 using RogueConsole.Enums;
 using Sharpie;
 using Sharpie.Backend;
@@ -69,7 +70,7 @@ terminal.Repeat(
             new Point(0, 0)
         );
         t.Screen.Refresh();
-        t.Screen.DrawBorder();
+        // t.Screen.DrawBorder();
         return Task.CompletedTask;
     },
     50
