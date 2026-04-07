@@ -23,8 +23,8 @@ public enum EntityType
 
 public enum RoomTypes
 {
-    Spawn,
-    Item,
-    Boss,
-    Normal
+    Spawn = 1,
+    Item = 2,
+    Boss = 3,
+    Normal = 4,
 }

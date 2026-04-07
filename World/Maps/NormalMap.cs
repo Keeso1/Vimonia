@@ -1,7 +1,7 @@
 namespace RogueConsole.World.Maps;
 
-using RogueConsole.Utils;
 using RogueConsole.Enums;
+using RogueConsole.Utils;
 using Sharpie;
 
 public class NormalMap(Canvas canvas) : TileMap(canvas)
@@ -16,5 +16,3 @@ public class NormalMap(Canvas canvas) : TileMap(canvas)
 	}
 
 }
-
-

@@ -3,8 +3,8 @@ namespace RogueConsole.Core;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using RogueConsole.World;
 using RogueConsole.Enums;
+using RogueConsole.World;
 using Sharpie;
 
 public class FloorLayout
@@ -12,11 +12,47 @@ public class FloorLayout
     public TileMap[,] Rooms { get; private set; } = new TileMap[16, 16];
     private readonly ILogger _logger;
 
-    public FloorLayout(ILogger Logger, Canvas canvas)
+    public FloorLayout(ILogger Logger, Canvas canvas, GameSettings settings)
     {
         _logger = Logger;
         Rooms[8, 8] = TileMap.GetRoom(RoomTypes.Spawn, canvas, _logger);
         Rooms[8, 8].InitMap();
+
+        for (var room = 0; room < settings.NumberOfRooms; room++)
+        {
+            Generate(canvas);
+            _logger.LogInformation("Run nr {room}", room);
+            _logger.LogInformation("Rooms: {rooms}", FloorLayout.RoomsToString(Rooms));
+        } // Generate layout
+
+        GenerateBossRoom(_logger, canvas); // Add bossroom at furthest x value
+    }
+
+    private void GenerateBossRoom(ILogger _logger, Canvas canvas) // TODO: Improve the select to choose the room furthest i.e most moves from spawn
+    {
+        var biggestDiff = (8, 8);
+        foreach ((int, int) tuple in GetNonEmptyRooms())
+        {
+            if (Math.Abs(tuple.Item1 - 8) > Math.Abs(biggestDiff.Item1 - 8))
+            {
+                biggestDiff = tuple;
+            }
+            ;
+
+            _logger.LogInformation("activerooms: {t}", tuple);
+            _logger.LogInformation("BiggestDiff on X axis: {diff}", biggestDiff);
+        }
+        Rooms[biggestDiff.Item1, biggestDiff.Item2] = TileMap.GetRoom(
+            RoomTypes.Boss,
+            canvas,
+            _logger
+        );
+        Rooms[biggestDiff.Item1, biggestDiff.Item2].InitMap();
+        _logger.LogInformation(
+            "RoomType of biggestDiff {type}",
+            Rooms[biggestDiff.Item1, biggestDiff.Item2].RoomType
+        );
+        _logger.LogInformation("Rooms: {rooms}", FloorLayout.RoomsToString(Rooms));
     }
 
     public static string RoomsToString(TileMap[,] Rooms) //Helper func to see the grid in a clean way
@@ -28,7 +64,7 @@ public class FloorLayout
             {
                 if (Rooms[x, y] != null)
                 {
-                    sb.Append(Convert.ToInt32(Rooms[x, y].Active)); //dafuq
+                    sb.Append(Convert.ToInt32(Rooms[x, y].RoomType)); //dafuq
                     sb.Append(' ');
                 }
                 else
@@ -42,9 +78,8 @@ public class FloorLayout
         return sb.ToString();
     }
 
-    public void Generate(Canvas canvas)
+    public List<(int, int)> GetNonEmptyRooms()
     {
-        var rand = new Random();
         List<(int, int)> activeRooms = new();
         for (int x = 0; x < Rooms.GetLength(0); x++)
         {
@@ -58,6 +93,13 @@ public class FloorLayout
             }
         }
 
+        return activeRooms;
+    }
+
+    public void Generate(Canvas canvas)
+    {
+        var rand = new Random();
+        List<(int, int)> activeRooms = GetNonEmptyRooms();
         _logger.LogInformation("active rooms count {ac}", activeRooms.Count);
 
         // Retry until we find an expandable room or run out of candidates
@@ -72,7 +114,12 @@ public class FloorLayout
                 // Successfully found an expandable room
                 var r = rand.Next(checkedRooms.Count);
                 var randomRoom = checkedRooms[r];
-                Rooms[randomRoom.Item1, randomRoom.Item2] = new TileMap(canvas) { Active = true };
+                Rooms[randomRoom.Item1, randomRoom.Item2] = TileMap.GetRoom(
+                    RoomTypes.Normal,
+                    canvas,
+                    _logger
+                );
+                Rooms[randomRoom.Item1, randomRoom.Item2].InitMap();
                 break;
             }
             else
