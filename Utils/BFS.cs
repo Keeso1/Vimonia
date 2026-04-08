@@ -1,10 +1,7 @@
-using Microsoft.Extensions.Logging;
 using RogueConsole.World;
 
 static class BFS
 {
-    static ILogger logger { get; set; }
-
     private class QuePair
     {
         public int first,
@@ -57,7 +54,7 @@ static class BFS
         q.Enqueue(new QuePair(row, col));
         vis[row, col] = true;
 
-        var lastRoom = (row, col);
+        var lastRoom = (row, col); //TODO: Make sure it selects the room with most hops from spawn
         // Iterate while the queue
         // is not empty
         while (q.Count != 0)
@@ -65,7 +62,6 @@ static class BFS
             QuePair cell = q.Peek();
             int x = cell.first;
             int y = cell.second;
-            logger.LogInformation(" {grid}", grid[x, y]);
             q.Dequeue();
             // Go to the adjacent cells
             for (int i = 0; i < 4; i++)
@@ -84,13 +80,10 @@ static class BFS
     }
 
     // Driver Code
-    public static (int x, int y) Execute(TileMap[,] Rooms, ILogger _logger)
+    public static (int x, int y) Execute(TileMap[,] Rooms)
     {
-        logger = _logger;
-
         // Declare the visited array
         bool[,] vis = new bool[ROW, COL];
         return Search(Rooms, vis, 8, 8);
     }
 }
-

@@ -26,7 +26,7 @@ public class MapGen
             _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
         } // Generate layout
 
-        GenerateBossRoom(_logger, canvas); // Add bossroom at furthest x value
+        GenerateBossRoom(_logger, canvas); // Add bossroom at furthest position
     }
 
     private void GenerateBossRoom(ILogger _logger, Canvas canvas)
