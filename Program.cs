@@ -40,7 +40,6 @@ Canvas canvas = new(terminal.Screen.Size);
 MapGen floor = new(logger, canvas, settings);
 
 var game = new GameState(
-    logger,
     new()
     {
         Attributes = VideoAttribute.Bold,

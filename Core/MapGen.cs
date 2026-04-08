@@ -17,7 +17,7 @@ public class MapGen
     public MapGen(ILogger Logger, Canvas canvas, GameSettings settings)
     {
         _logger = Logger;
-        Rooms[8, 8] = TileMap.GetRoom(RoomTypes.Item, canvas, _logger);
+        Rooms[8, 8] = TileMap.GetRoom(RoomTypes.Item, canvas);
         Rooms[8, 8].InitMap();
 
         for (var room = 0; room < settings.NumberOfRooms; room++)
@@ -46,14 +46,15 @@ public class MapGen
         }
         Rooms[biggestDiff.Item1, biggestDiff.Item2] = TileMap.GetRoom(
             RoomTypes.Boss,
-            canvas,
-            _logger
+            canvas
         );
+
         Rooms[biggestDiff.Item1, biggestDiff.Item2].InitMap();
         _logger.LogInformation(
             "RoomType of biggestDiff {type}",
             Rooms[biggestDiff.Item1, biggestDiff.Item2].RoomType
         );
+
         _logger.LogInformation("Rooms: {rooms}", MapGen.RoomsToString(Rooms));
     }
 
@@ -118,9 +119,9 @@ public class MapGen
                 var randomRoom = checkedRooms[r];
                 Rooms[randomRoom.Item1, randomRoom.Item2] = TileMap.GetRoom(
                     RoomTypes.Normal,
-                    canvas,
-                    _logger
+                    canvas
                 );
+
                 Rooms[randomRoom.Item1, randomRoom.Item2].InitMap();
                 break;
             }
