@@ -10,8 +10,8 @@ public class NormalMap(Canvas canvas) : TileMap(canvas)
 	{
 		base.InitMap();
 		RoomType = RoomTypes.Normal;
-		Set(GetCanvasCoords.GetCanvasTopCenter(Canvas).Add(0, 2), Tile.Goblin);
-		Set(GetCanvasCoords.GetCanvasBottomCenter(Canvas).Subtract(0, 1), Tile.Goblin);
+		Set(GetCanvasCoords.GetCanvasTopCenter(Canvas).Add(0, 2).Clamp(canvas.Size), Tile.Goblin);
+		Set(GetCanvasCoords.GetCanvasBottomCenter(Canvas).Subtract(0, 1).Clamp(canvas.Size), Tile.Goblin);
 	}
 
 }
