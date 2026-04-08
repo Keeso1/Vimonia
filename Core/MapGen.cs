@@ -2,12 +2,11 @@ using System.Drawing;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using RogueConsole.Enums;
-using RogueConsole.World;
 using RogueConsole.Utils;
+using RogueConsole.World;
 using Sharpie;
 
 namespace RogueConsole.Core;
-
 
 public class MapGen
 {
@@ -17,7 +16,7 @@ public class MapGen
     public MapGen(ILogger Logger, Canvas canvas, GameSettings settings)
     {
         _logger = Logger;
-        Rooms[8, 8] = TileMap.GetRoom(RoomTypes.Item, canvas);
+        Rooms[8, 8] = TileMap.GetRoom(RoomTypes.Spawn, canvas);
         Rooms[8, 8].InitMap();
 
         for (var room = 0; room < settings.NumberOfRooms; room++)
@@ -27,10 +26,38 @@ public class MapGen
             _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
         } // Generate layout
 
-        GenerateBossRoom(_logger, canvas); // Add bossroom at furthest x value
+        // GenerateBossRoom(_logger, canvas); // Add bossroom at furthest x value
+        GenerateItemRoom(_logger, canvas);
+
+        _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
     }
 
-    private void GenerateBossRoom(ILogger _logger, Canvas canvas) // TODO: Improve the select to choose the room furthest i.e most moves from spawn
+    private void GenerateItemRoom(ILogger logger, Canvas canvas)
+    {
+        List<(int x, int y)> activeRooms = [];
+
+        for (int x = 0; x < Rooms.GetLength(0); x++)
+        {
+            for (int y = 0; y < Rooms.GetLength(1); y++)
+            {
+                if (
+                    Rooms[x, y] != null
+                    && Rooms[x, y].RoomType != RoomTypes.Boss
+                    && Rooms[x, y].RoomType != RoomTypes.Spawn
+                )
+                {
+                    activeRooms.Add((x, y));
+                }
+            }
+        }
+        var rand = new Random();
+        (int x, int y) randRoom = activeRooms[rand.Next(activeRooms.Count)];
+
+        Rooms[randRoom.x, randRoom.y] = TileMap.GetRoom(RoomTypes.Item, canvas);
+        Rooms[randRoom.x, randRoom.y].InitMap();
+    }
+
+    private void GenerateBossRoom(ILogger _logger, Canvas canvas)
     {
         var biggestDiff = (8, 8);
         foreach ((int, int) tuple in GetNonEmptyRooms())
@@ -44,10 +71,7 @@ public class MapGen
             _logger.LogInformation("activerooms: {t}", tuple);
             _logger.LogInformation("BiggestDiff on X axis: {diff}", biggestDiff);
         }
-        Rooms[biggestDiff.Item1, biggestDiff.Item2] = TileMap.GetRoom(
-            RoomTypes.Boss,
-            canvas
-        );
+        Rooms[biggestDiff.Item1, biggestDiff.Item2] = TileMap.GetRoom(RoomTypes.Boss, canvas);
 
         Rooms[biggestDiff.Item1, biggestDiff.Item2].InitMap();
         _logger.LogInformation(
