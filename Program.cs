@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using RogueConsole.Core;
 using RogueConsole.Enums;
-using RogueConsole.World.Maps;
 using Sharpie;
 using Sharpie.Backend;
 
@@ -38,10 +37,9 @@ var terminal = new Terminal(
 
 Canvas canvas = new(terminal.Screen.Size);
 
-FloorLayout floor = new(logger, canvas, settings);
+MapGen floor = new(logger, canvas, settings);
 
 var game = new GameState(
-    logger,
     new()
     {
         Attributes = VideoAttribute.Bold,

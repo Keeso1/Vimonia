@@ -1,7 +1,5 @@
 using System.Drawing;
 using Microsoft.Extensions.Logging;
-using RogueConsole.Core;
-using RogueConsole.Entities;
 using RogueConsole.Enums;
 using RogueConsole.Utils;
 using RogueConsole.World.Maps;
@@ -54,10 +52,7 @@ public class TileMap
     ///</summary>
     protected void Set((int x, int y) coord, Tile tile) => Tiles[coord.x, coord.y] = tile;
 
-    public bool InBounds(int x, int y) =>
-        x >= 0 && y >= 0 && x < Canvas.Size.Width && y < Canvas.Size.Height;
-
-    public bool IsWalkable(int x, int y) => InBounds(x, y) && Tiles[x, y].Walkable;
+    public bool IsWalkable(int x, int y) => (x, y).InBounds(Canvas.Size) && Tiles[x, y].Walkable;
 
     protected void Fill()
     {
@@ -86,7 +81,7 @@ public class TileMap
         );
     }
 
-    public void RenderToCanvas(ILogger logger)
+    public void RenderToCanvas()
     {
         for (int w = 0; w < Canvas.Size.Width; w++)
         {
@@ -102,12 +97,12 @@ public class TileMap
     // 	// RenderToCanvas();
     // }
 
-    public static TileMap GetRoom(RoomTypes type, Canvas canvas, ILogger logger) =>
+    public static TileMap GetRoom(RoomTypes type, Canvas canvas) =>
         type switch
         {
             RoomTypes.Spawn => new SpawnRoom(canvas),
-            RoomTypes.Normal => new NormalMap(canvas),
-            RoomTypes.Item => new ItemRoom(canvas, logger),
+            RoomTypes.Normal => new NormalRoom(canvas),
+            RoomTypes.Item => new ItemRoom(canvas),
             RoomTypes.Boss => new BossRoom(canvas),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported room type"),
         };

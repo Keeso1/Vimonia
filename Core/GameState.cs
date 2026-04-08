@@ -1,12 +1,12 @@
 using System.Drawing;
 using Microsoft.Extensions.Logging;
 using RogueConsole.Enums;
+using RogueConsole.Assets;
 using Sharpie;
-using Sharpie.Abstractions;
 
 namespace RogueConsole.Core;
 
-public sealed class GameState(ILogger logger, Style playerBody, FloorLayout floorLayout)
+public sealed class GameState(Style playerBody, MapGen mapGen)
 {
     public static event EventHandler<GamePhase> CurrentState;
     public static event Action? OnTick;
@@ -37,8 +37,8 @@ public sealed class GameState(ILogger logger, Style playerBody, FloorLayout floo
             _ => PrevPosition,
         };
 
-        floorLayout.Rooms[8, 8].RenderToCanvas(logger);
-        Canvas.Glyph(position, Assets.Assets.Player, playerBody);
+        mapGen.Rooms[8, 8].RenderToCanvas();
+        Canvas.Glyph(position, GameConstants.Player, playerBody);
         PrevPosition = position;
     }
 }

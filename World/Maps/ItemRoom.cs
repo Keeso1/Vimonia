@@ -5,7 +5,7 @@ using Sharpie;
 
 namespace RogueConsole.World.Maps;
 
-public class ItemRoom(Canvas canvas, ILogger logger) : TileMap(canvas)
+public class ItemRoom(Canvas canvas) : TileMap(canvas)
 {
     public override void InitMap()
     {
