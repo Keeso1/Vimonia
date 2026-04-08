@@ -1,6 +1,7 @@
 using System.Drawing;
 using Microsoft.Extensions.Logging;
 using RogueConsole.Enums;
+using RogueConsole.Assets;
 using Sharpie;
 using Sharpie.Abstractions;
 
@@ -38,7 +39,7 @@ public sealed class GameState(ILogger logger, Style playerBody, MapGen mapGen)
         };
 
         mapGen.Rooms[8, 8].RenderToCanvas(logger);
-        Canvas.Glyph(position, Assets.Assets.Player, playerBody);
+        Canvas.Glyph(position, GameConstants.Player, playerBody);
         PrevPosition = position;
     }
 }
