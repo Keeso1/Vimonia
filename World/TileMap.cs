@@ -54,10 +54,7 @@ public class TileMap
     ///</summary>
     protected void Set((int x, int y) coord, Tile tile) => Tiles[coord.x, coord.y] = tile;
 
-    public bool InBounds(int x, int y) =>
-        x >= 0 && y >= 0 && x < Canvas.Size.Width && y < Canvas.Size.Height;
-
-    public bool IsWalkable(int x, int y) => InBounds(x, y) && Tiles[x, y].Walkable;
+    public bool IsWalkable(int x, int y) => (x, y).InBounds(Canvas.Size) && Tiles[x, y].Walkable;
 
     protected void Fill()
     {
