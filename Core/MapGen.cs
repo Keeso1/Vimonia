@@ -24,7 +24,7 @@ public class MapGen
         {
             Generate(canvas);
             _logger.LogInformation("Run nr {room}", room);
-            _logger.LogInformation("Rooms: {rooms}", MapGen.RoomsToString(Rooms));
+            _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
         } // Generate layout
 
         GenerateBossRoom(_logger, canvas); // Add bossroom at furthest x value
@@ -55,7 +55,7 @@ public class MapGen
             Rooms[biggestDiff.Item1, biggestDiff.Item2].RoomType
         );
 
-        _logger.LogInformation("Rooms: {rooms}", MapGen.RoomsToString(Rooms));
+        _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
     }
 
     public static string RoomsToString(TileMap[,] Rooms) //Helper func to see the grid in a clean way
