@@ -10,11 +10,12 @@ namespace RogueConsole.Core;
 
 public class MapGen
 {
-    public TileMap[,] Rooms { get; private set; } = new TileMap[16, 16];
+    public TileMap[,] Rooms { get; private set; }
     private readonly ILogger _logger;
 
     public MapGen(ILogger Logger, Canvas canvas, GameSettings settings)
     {
+        Rooms = new TileMap[(settings.NumberOfRooms + 1) * 2, (settings.NumberOfRooms + 1) * 2];
         _logger = Logger;
         Rooms[8, 8] = TileMap.GetRoom(RoomTypes.Spawn, canvas);
         Rooms[8, 8].InitMap();
