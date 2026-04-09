@@ -16,7 +16,7 @@ public class MapGen
     public MapGen(ILogger Logger, Canvas canvas, GameSettings settings)
     {
         _logger = Logger;
-        Rooms[8, 8] = TileMap.GetRoom(RoomTypes.Item, canvas);
+        Rooms[8, 8] = TileMap.GetRoom(RoomTypes.Spawn, canvas);
         Rooms[8, 8].InitMap();
 
         for (var room = 0; room < settings.NumberOfRooms; room++)
@@ -26,7 +26,43 @@ public class MapGen
             _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
         } // Generate layout
 
-        GenerateBossRoom(_logger, canvas); // Add bossroom at furthest position
+        GenerateBossRoom(_logger, canvas); // Add bossroom at furthest x value
+        GenerateItemRoom(_logger, canvas);
+
+        _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
+    }
+
+    private void GenerateItemRoom(ILogger logger, Canvas canvas)
+    {
+        List<(int x, int y)> activeRooms = [];
+
+        for (int x = 0; x < Rooms.GetLength(0); x++)
+        {
+            for (int y = 0; y < Rooms.GetLength(1); y++)
+            {
+                if (
+                    Rooms[x, y] != null
+                    && Rooms[x, y].RoomType != RoomTypes.Boss
+                    && Rooms[x, y].RoomType != RoomTypes.Spawn
+                )
+                {
+                    activeRooms.Add((x, y));
+                }
+            }
+        }
+
+        if (activeRooms.Count == 0)
+        {
+            throw new Exception(
+                "Can't generate itemroom because there are no eligible rooms to select from."
+            );
+        }
+
+        var rand = new Random();
+        (int x, int y) randRoom = activeRooms[rand.Next(activeRooms.Count)];
+
+        Rooms[randRoom.x, randRoom.y] = TileMap.GetRoom(RoomTypes.Item, canvas);
+        Rooms[randRoom.x, randRoom.y].InitMap();
     }
 
     private void GenerateBossRoom(ILogger _logger, Canvas canvas)
