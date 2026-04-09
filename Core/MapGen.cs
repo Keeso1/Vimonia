@@ -26,7 +26,7 @@ public class MapGen
             _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
         } // Generate layout
 
-        // GenerateBossRoom(_logger, canvas); // Add bossroom at furthest x value
+        GenerateBossRoom(_logger, canvas); // Add bossroom at furthest x value
         GenerateItemRoom(_logger, canvas);
 
         _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
@@ -67,25 +67,9 @@ public class MapGen
 
     private void GenerateBossRoom(ILogger _logger, Canvas canvas)
     {
-        var biggestDiff = (8, 8);
-        foreach ((int, int) tuple in GetNonEmptyRooms())
-        {
-            if (Math.Abs(tuple.Item1 - 8) > Math.Abs(biggestDiff.Item1 - 8))
-            {
-                biggestDiff = tuple;
-            }
-            ;
-
-            _logger.LogInformation("activerooms: {t}", tuple);
-            _logger.LogInformation("BiggestDiff on X axis: {diff}", biggestDiff);
-        }
-        Rooms[biggestDiff.Item1, biggestDiff.Item2] = TileMap.GetRoom(RoomTypes.Boss, canvas);
-
-        Rooms[biggestDiff.Item1, biggestDiff.Item2].InitMap();
-        _logger.LogInformation(
-            "RoomType of biggestDiff {type}",
-            Rooms[biggestDiff.Item1, biggestDiff.Item2].RoomType
-        );
+        (int x, int y) = BFS.Execute(Rooms, _logger); //Breadth-first-search
+        Rooms[x, y] = TileMap.GetRoom(RoomTypes.Boss, canvas);
+        Rooms[x, y].InitMap();
 
         _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
     }
