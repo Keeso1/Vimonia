@@ -50,6 +50,14 @@ public class MapGen
                 }
             }
         }
+
+        if (activeRooms.Count == 0)
+        {
+            throw new Exception(
+                "Can't generate itemroom because there are no eligible rooms to select from."
+            );
+        }
+
         var rand = new Random();
         (int x, int y) randRoom = activeRooms[rand.Next(activeRooms.Count)];
 
