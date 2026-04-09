@@ -10,26 +10,39 @@ namespace RogueConsole.Core;
 
 public class MapGen
 {
-    public TileMap[,] Rooms { get; private set; } = new TileMap[16, 16];
+    public TileMap[,] Rooms { get; private set; }
     private readonly ILogger _logger;
+
+    private Size Size { get; set; }
 
     public MapGen(ILogger Logger, Canvas canvas, GameSettings settings)
     {
+        Rooms = new TileMap[(settings.NumberOfRooms + 1) * 2, (settings.NumberOfRooms + 1) * 2];
+        // Size = new(settings.NumberOfRooms + 1, settings.NumberOfRooms + 1);
         _logger = Logger;
         Rooms[8, 8] = TileMap.GetRoom(RoomTypes.Spawn, canvas);
         Rooms[8, 8].InitMap();
+
+        _logger.LogInformation("Settings number of rooms {rr}", settings.NumberOfRooms);
+        _logger.LogInformation("size: {x}x{y}", Rooms.GetLength(0), Rooms.GetLength(1));
 
         for (var room = 0; room < settings.NumberOfRooms; room++)
         {
             Generate(canvas);
             _logger.LogInformation("Run nr {room}", room);
-            _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
+            // _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
         } // Generate layout
 
         GenerateBossRoom(_logger, canvas); // Add bossroom at furthest x value
         GenerateItemRoom(_logger, canvas);
-
+        SetDoors();
+        foreach (var (x, y) in GetNonEmptyRooms())
+        {
+            _logger.LogInformation("NonEmptyRoom: {room}", (x, y));
+            Rooms[x, y].InitMap();
+        }
         _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
+        _logger.LogInformation("Neghbors of spawn: {neigh}", Rooms[8, 8].Neighbors);
     }
 
     private void GenerateItemRoom(ILogger logger, Canvas canvas)
@@ -74,6 +87,30 @@ public class MapGen
         _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
     }
 
+    public void SetDoors()
+    {
+        List<(int x, int y)> activeRooms = GetNonEmptyRooms();
+        foreach (var room in activeRooms)
+        {
+            List<Cardinals> activeNeighbors = [];
+            var neighbors = room.GetCardinalNeighbours().ToList();
+
+            for (
+                int neghborIndex = (int)Cardinals.north;
+                neghborIndex < neighbors.Count;
+                neghborIndex++
+            )
+            {
+                if (Rooms[neighbors[neghborIndex].x, neighbors[neghborIndex].y] != null)
+                {
+                    activeNeighbors.Add((Cardinals)neghborIndex);
+                }
+            }
+
+            Rooms[room.x, room.y].Neighbors = activeNeighbors;
+        }
+    }
+
     public static string RoomsToString(TileMap[,] Rooms) //Helper func to see the grid in a clean way
     {
         var sb = new StringBuilder();
@@ -97,7 +134,7 @@ public class MapGen
         return sb.ToString();
     }
 
-    public List<(int, int)> GetNonEmptyRooms()
+    public List<(int x, int y)> GetNonEmptyRooms()
     {
         List<(int, int)> activeRooms = new();
         for (int x = 0; x < Rooms.GetLength(0); x++)
@@ -154,13 +191,12 @@ public class MapGen
     {
         _logger.LogInformation("Coming into checkrooms");
         Size size = new(Rooms.GetLength(0), Rooms.GetLength(1));
-
         _logger.LogInformation(
             "room.Item1 {item1} \n room.Item2 {item2} \n maxX {maxX} \n maxY {maxY}",
             room.Item1,
             room.Item2,
-            size.Width,
-            size.Height
+            Size.Width,
+            Size.Height
         );
 
         return room.GetCardinalNeighbours()

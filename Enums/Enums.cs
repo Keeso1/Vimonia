@@ -15,6 +15,14 @@ public enum Direction
     right,
 }
 
+public enum Cardinals
+{
+    north,
+    west,
+    east,
+    south,
+}
+
 public enum EntityType
 {
     Player,
