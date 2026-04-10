@@ -13,27 +13,24 @@ public class MapGen
 {
     public TileMap[,] Rooms { get; private set; }
     private readonly ILogger _logger;
-    private GameSettings _settings { get; set; }
+    private GameSettings Settings { get; set; }
+    private Size Size { get; set; }
 
     public MapGen(ILogger Logger, Canvas canvas, GameSettings settings)
     {
-        _settings = settings;
-        Rooms = new TileMap[(_settings.NumberOfRooms + 1) * 2, (_settings.NumberOfRooms + 1) * 2];
+        Settings = settings;
+        Rooms = new TileMap[(Settings.NumberOfRooms + 1) * 2, (Settings.NumberOfRooms + 1) * 2];
         _logger = Logger;
-        Rooms[_settings.NumberOfRooms + 1, _settings.NumberOfRooms + 1] = TileMap.GetRoom(
+        Rooms[Settings.NumberOfRooms + 1, Settings.NumberOfRooms + 1] = TileMap.GetRoom(
             RoomTypes.Spawn,
             canvas
         );
-        Rooms[_settings.NumberOfRooms + 1, _settings.NumberOfRooms + 1].InitMap();
+        Rooms[Settings.NumberOfRooms + 1, Settings.NumberOfRooms + 1].InitMap();
+        Size = new(Rooms.GetLength(0), Rooms.GetLength(1));
 
-        _logger.LogInformation("_settings number of rooms {rr}", _settings.NumberOfRooms);
-        _logger.LogInformation("size: {x}x{y}", Rooms.GetLength(0), Rooms.GetLength(1));
-
-        for (var room = 0; room < _settings.NumberOfRooms; room++)
+        for (var room = 0; room < Settings.NumberOfRooms; room++)
         {
             Generate(canvas);
-            _logger.LogInformation("Run nr {room}", room);
-            // _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
         } // Generate layout
 
         GenerateBossRoom(_logger, canvas); // Add bossroom at furthest x value
@@ -41,11 +38,8 @@ public class MapGen
         SetDoors();
         foreach (var (x, y) in GetNonEmptyRooms())
         {
-            _logger.LogInformation("NonEmptyRoom: {room}", (x, y));
             Rooms[x, y].InitMap();
         }
-        _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
-        _logger.LogInformation("Neghbors of spawn: {neigh}", Rooms[8, 8].Neighbors);
     }
 
     private void GenerateItemRoom(ILogger logger, Canvas canvas)
@@ -83,16 +77,13 @@ public class MapGen
 
     private void GenerateBossRoom(ILogger _logger, Canvas canvas)
     {
-        (int x, int y) = BFS.Execute(Rooms, _settings); //Breadth-first-search
+        (int x, int y) = BFS.Execute(Rooms, Settings); //Breadth-first-search
         Rooms[x, y] = TileMap.GetRoom(RoomTypes.Boss, canvas);
         Rooms[x, y].InitMap();
-
-        _logger.LogInformation("Rooms: {rooms}", RoomsToString(Rooms));
     }
 
     public void SetDoors()
     {
-        Size size = new(Rooms.GetLength(0), Rooms.GetLength(1));
         List<(int x, int y)> activeRooms = GetNonEmptyRooms();
         foreach (var room in activeRooms)
         {
@@ -106,7 +97,7 @@ public class MapGen
             )
             {
                 var neighbor = neighbors[neighborIndex];
-                if (Rooms[neighbor.x, neighbor.y] != null && neighbor.InBounds(size))
+                if (Rooms[neighbor.x, neighbor.y] != null && neighbor.InBounds(Size))
                 {
                     activeNeighbors.Add((Cardinals)neighborIndex);
                 }
@@ -194,18 +185,8 @@ public class MapGen
 
     public List<(int, int)> CheckRooms((int, int) room)
     {
-        _logger.LogInformation("Coming into checkrooms");
-        Size size = new(Rooms.GetLength(0), Rooms.GetLength(1));
-        _logger.LogInformation(
-            "room.Item1 {item1} \n room.Item2 {item2} \n maxX {maxX} \n maxY {maxY}",
-            room.Item1,
-            room.Item2,
-            size.Width,
-            size.Height
-        );
-
         return room.GetCardinalNeighbours()
-            .Where(r => r.InBounds(size) && Rooms[r.x, r.y] == null)
+            .Where(r => r.InBounds(Size) && Rooms[r.x, r.y] == null)
             .ToList();
     }
 }
