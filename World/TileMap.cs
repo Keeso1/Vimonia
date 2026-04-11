@@ -71,6 +71,8 @@ public class TileMap
 				case Cardinals.South:
 					Set(GetCanvasCoords.GetCanvasBottomCenter(Canvas), Tile.Door);
 					break;
+				case Cardinals.Unknown:
+					continue;
 				default:
 					throw new Exception("Neighbor must have a cardinal direction");
 			};
