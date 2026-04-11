@@ -91,7 +91,7 @@ public class MapGen
 
             foreach (var neighbor in room.GetCardinalNeighbours())
             {
-                if (Rooms[neighbor.x, neighbor.y] != null && neighbor.InBounds(Size))
+                if (neighbor.InBounds(Size) && Rooms[neighbor.x, neighbor.y] != null)
                 {
                     activeNeighbors.Add((neighbor.x - room.x, neighbor.y - room.y).ToCardinal());
                 }
