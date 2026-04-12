@@ -5,7 +5,6 @@ using Vimonia.Enums;
 using Vimonia.Utils;
 using Vimonia.World;
 using Sharpie;
-using System.Net.NetworkInformation;
 
 namespace Vimonia.Core;
 
@@ -79,8 +78,8 @@ public sealed class GameState(Style playerBody, MapGen floor, ILogger logger)
 		position = directionOfNewRoom switch{
 			Cardinals.North => new(GetCanvasCoords.GetCanvasBottomCenter(Canvas).Item1, GetCanvasCoords.GetCanvasBottomCenter(Canvas).Item2 - 1), // minus one so it is not on the door
 			Cardinals.East => new(GetCanvasCoords.GetCanvasLeftCenter(Canvas).Item1 + 1, GetCanvasCoords.GetCanvasLeftCenter(Canvas).Item2),
-			Cardinals.West => new(GetCanvasCoords.GetCanvasRightCenter(Canvas).Item1 - 1, GetCanvasCoords.GetCanvasLeftCenter(Canvas).Item2),
-			Cardinals.South => new(GetCanvasCoords.GetCanvasRightCenter(Canvas).Item1, GetCanvasCoords.GetCanvasLeftCenter(Canvas).Item2 + 1),
+			Cardinals.West => new(GetCanvasCoords.GetCanvasRightCenter(Canvas).Item1 - 1, GetCanvasCoords.GetCanvasRightCenter(Canvas).Item2),
+			Cardinals.South => new(GetCanvasCoords.GetCanvasTopCenter(Canvas).Item1, GetCanvasCoords.GetCanvasTopCenter(Canvas).Item2 + 1),
 			Cardinals.Unknown => throw new Exception("New room hasn't got a direction relative to old room"),
 			_=> throw new Exception("directionOfNewRoom is not valid")
 		};
