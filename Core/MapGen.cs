@@ -97,7 +97,6 @@ public class MapGen
                 }
             }
 
-            _logger.LogInformation("activeNeighs {neg}", activeNeighbors);
             Rooms[room.x, room.y].Neighbors = activeNeighbors;
         }
     }

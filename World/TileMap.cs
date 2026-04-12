@@ -89,7 +89,7 @@ public class TileMap
             GetCanvasCoords.GetVerticalLine(Canvas.Size.Width - 1, 0, Canvas.Size.Height),
             Tile.Wall
         );
-        Set(GetCanvasCoords.GetHorizontalLine(1, 0, Canvas.Size.Width), Tile.Wall);
+        Set(GetCanvasCoords.GetHorizontalLine(0, 0, Canvas.Size.Width), Tile.Wall);
         Set(
             GetCanvasCoords.GetHorizontalLine(Canvas.Size.Height - 1, 0, Canvas.Size.Width),
             Tile.Wall

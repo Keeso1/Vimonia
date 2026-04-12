@@ -32,10 +32,12 @@ ILogger<Program> logger = loggerFactory.CreateLogger<Program>();
 
 var terminal = new Terminal(
     CursesBackend.Load(),
-    new TerminalOptions(UseColors: true, CaretMode: CaretMode.Invisible, UseMouse: false)
+    new TerminalOptions(UseColors: true, CaretMode: CaretMode.Invisible, UseMouse: false, ManagedWindows: true)
 );
 
-Canvas canvas = new(terminal.Screen.Size);
+var subWindow = terminal.Screen.Window(new(1, 1, terminal.Screen.Size.Width - 2, terminal.Screen.Size.Height - 2));
+
+Canvas canvas = new(subWindow.Size);
 
 MapGen floor = new(logger, canvas, settings);
 
@@ -45,7 +47,8 @@ var game = new GameState(
         Attributes = VideoAttribute.Bold,
         ColorMixture = terminal.Colors.MixColors(StandardColor.Magenta, StandardColor.Black),
     },
-    floor
+    floor,
+	logger
 )
 {
     Canvas = canvas,
