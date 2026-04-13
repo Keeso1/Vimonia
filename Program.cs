@@ -35,9 +35,28 @@ var terminal = new Terminal(
     new TerminalOptions(UseColors: true, CaretMode: CaretMode.Invisible, UseMouse: false, ManagedWindows: true)
 );
 
-var subWindow = terminal.Screen.Window(new(1, 1, terminal.Screen.Size.Width - 2, terminal.Screen.Size.Height - 2));
 
-Canvas canvas = new(subWindow.Size);
+var window = terminal.Screen.Window(new(1, 1, terminal.Screen.Size.Width - 2, terminal.Screen.Size.Height));
+
+//TESTING
+var subWindow = terminal.Screen.Window(new(1, 1, terminal.Screen.Size.Width / 2, terminal.Screen.Size.Height / 2));
+window.Background = (new(' '),
+	new()
+	{
+		Attributes = VideoAttribute.None,
+		ColorMixture = terminal.Colors.MixColors((short) StandardColor.Default, 100)
+	});
+
+subWindow.Background = (new(' '),
+	new()
+	{
+		Attributes = VideoAttribute.None,
+		ColorMixture = terminal.Colors.MixColors((short) StandardColor.Default, 60)
+	});
+//TESTING
+
+Canvas canvas = new(window.Size);
+Canvas minimapCanvas = new(subWindow.Size);
 
 MapGen floor = new(logger, canvas, settings);
 
@@ -57,14 +76,23 @@ var game = new GameState(
 };
 
 
+
 terminal.Repeat(
     t =>
     {
-        game.Canvas.DrawOnto(
-            t.Screen,
-            new Rectangle(new Point(0, 0), canvas.Size),
-            new Point(0, 0)
-        );
+		game.Canvas.DrawOnto(
+			window,
+			new Rectangle(new Point(0, 0), canvas.Size),
+			new Point(0, 0)
+		);
+
+		// MINIMAP
+		game.Canvas.DrawOnto(
+			subWindow,
+			new Rectangle(new Point(0, 0), minimapCanvas.Size),
+			new Point(0, 0)
+		);
+
         t.Screen.Refresh();
         // t.Screen.DrawBorder();
         return Task.CompletedTask;
@@ -92,6 +120,11 @@ terminal.Run(
             case KeyEvent { Char.Value: 'l' }:
                 game.Update(Direction.Right);
                 break;
+			case KeyEvent { Char.Value: 'm'}:
+				subWindow.Visible = !subWindow.Visible; //Toggle window
+				window.SendToBack();
+				subWindow.BringToFront();
+				break;
         }
         ;
         return Task.FromResult(true);

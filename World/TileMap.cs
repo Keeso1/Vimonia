@@ -56,7 +56,8 @@ public class TileMap
         }
     }
 
-	public void RenderDoors(){
+	public void RenderDoors()
+	{
 		foreach(Cardinals neighbor in Neighbors){
 			switch (neighbor)
 			{
