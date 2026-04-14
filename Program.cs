@@ -71,8 +71,9 @@ var game = new GameState(
 )
 {
     Canvas = canvas,
-	PrevPosition = new(canvas.Size.Width / 2, canvas.Size.Height / 2),
-	CurrentRoom = floor.Rooms[settings.NumberOfRooms +1, settings.NumberOfRooms +1]
+	PrevPosition = new(Canvas.Size.Width / 2, Canvas.Size.Height / 2),
+	CurrentRoom = floor.Rooms[settings.NumberOfRooms +1, settings.NumberOfRooms +1],
+	MinimapCanvas = minimapCanvas;
 };
 
 

@@ -14,9 +14,12 @@ public sealed class GameState(Style playerBody, MapGen floor, ILogger logger)
     public static event Action? OnTick;
 
 	public required TileMap CurrentRoom {get; set;}
+	public required TileMap MiniMap {get; set;} = new MiniMap(TileMap CurrentRoom, Canvas MinimapCanvas);
 
     public Point PrevPosition { get; set; }
     public required Canvas Canvas { get; set; }
+    public required Canvas MinimapCanvas { get; set; }
+
 
     public void Update(Direction? direction)
     {
@@ -48,8 +51,10 @@ public sealed class GameState(Style playerBody, MapGen floor, ILogger logger)
 
 
         CurrentRoom.RenderToCanvas();
-        Canvas.Glyph(position, GameConstants.Player, playerBody);
+        Canvas.Glyph(position, GameConstants.Player, playerBody); //Update player position
         PrevPosition = position;
+		//Render to Minimap here!
+		MinimapCanvas.RenderToCanvas();
     }
 
 	public Point EnterNewRoom(Point position)
