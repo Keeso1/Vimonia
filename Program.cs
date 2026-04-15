@@ -38,7 +38,7 @@ var terminal = new Terminal(
 
 var window = terminal.Screen.Window(new(1, 1, terminal.Screen.Size.Width - 2, terminal.Screen.Size.Height));
 
-//TESTING
+//MINIMAP TESTING
 var subWindow = terminal.Screen.Window(new(1, 1, terminal.Screen.Size.Width / 2, terminal.Screen.Size.Height / 2));
 window.Background = (new(' '),
 	new()
@@ -53,7 +53,7 @@ subWindow.Background = (new(' '),
 		Attributes = VideoAttribute.None,
 		ColorMixture = terminal.Colors.MixColors((short) StandardColor.Default, 60)
 	});
-//TESTING
+//
 
 Canvas canvas = new(window.Size);
 Canvas minimapCanvas = new(subWindow.Size);
@@ -67,13 +67,14 @@ var game = new GameState(
         ColorMixture = terminal.Colors.MixColors(StandardColor.Magenta, StandardColor.Black),
     },
     floor,
-	logger
+	logger,
+	settings
 )
 {
     Canvas = canvas,
-	PrevPosition = new(Canvas.Size.Width / 2, Canvas.Size.Height / 2),
+	PrevPosition = new(canvas.Size.Width / 2, canvas.Size.Height / 2),
 	CurrentRoom = floor.Rooms[settings.NumberOfRooms +1, settings.NumberOfRooms +1],
-	MinimapCanvas = minimapCanvas;
+	MinimapCanvas = minimapCanvas
 };
 
 

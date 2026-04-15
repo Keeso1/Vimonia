@@ -101,7 +101,7 @@ public class MapGen
         }
     }
 
-    public static string RoomsToString(TileMap[,] Rooms) //Helper func to see the grid in a clean way
+    public static string RoomsToString(TileMap[,] Rooms, TileMap currentRoom) //Helper func to see the grid in a clean way
     {
         var sb = new StringBuilder();
         for (int y = 0; y < Rooms.GetLength(1); y++)

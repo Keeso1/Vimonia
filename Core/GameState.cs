@@ -5,19 +5,20 @@ using Vimonia.Enums;
 using Vimonia.Utils;
 using Vimonia.World;
 using Sharpie;
+using System.Text;
 
 namespace Vimonia.Core;
 
-public sealed class GameState(Style playerBody, MapGen floor, ILogger logger)
+public sealed class GameState(Style playerBody, MapGen floor, ILogger logger, GameSettings settings)
 {
     public static event EventHandler<GamePhase> CurrentState;
     public static event Action? OnTick;
 
 	public required TileMap CurrentRoom {get; set;}
-	public required TileMap MiniMap {get; set;} = new MiniMap(TileMap CurrentRoom, Canvas MinimapCanvas);
 
     public Point PrevPosition { get; set; }
     public required Canvas Canvas { get; set; }
+
     public required Canvas MinimapCanvas { get; set; }
 
 
@@ -53,9 +54,11 @@ public sealed class GameState(Style playerBody, MapGen floor, ILogger logger)
         CurrentRoom.RenderToCanvas();
         Canvas.Glyph(position, GameConstants.Player, playerBody); //Update player position
         PrevPosition = position;
-		//Render to Minimap here!
-		MinimapCanvas.RenderToCanvas();
+		
+		Rune[,] map = CanvasHelpers.RoomsToString(logger, settings, floor.Rooms, CurrentRoom);
+		CanvasHelpers.RenderToMap(logger, MinimapCanvas, map);
     }
+
 
 	public Point EnterNewRoom(Point position)
 	{
