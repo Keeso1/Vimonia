@@ -56,29 +56,32 @@ public class TileMap
         }
     }
 
-	public void RenderDoors(){
-		foreach(Cardinals neighbor in Neighbors){
-			switch (neighbor)
-			{
-				case Cardinals.North:
-					Set(GetCanvasCoords.GetCanvasTopCenter(Canvas), Tile.Door);
-					break;
-				case Cardinals.East:
-					Set(GetCanvasCoords.GetCanvasRightCenter(Canvas), Tile.Door);
-					break;
-				case Cardinals.West:
-					Set(GetCanvasCoords.GetCanvasLeftCenter(Canvas), Tile.Door);
-					break;
-				case Cardinals.South:
-					Set(GetCanvasCoords.GetCanvasBottomCenter(Canvas), Tile.Door);
-					break;
-				case Cardinals.Unknown:
-					continue;
-				default:
-					throw new Exception("Neighbor must have a cardinal direction");
-			};
-		}
-	}
+    public void RenderDoors()
+    {
+        foreach (Cardinals neighbor in Neighbors)
+        {
+            switch (neighbor)
+            {
+                case Cardinals.North:
+                    Set(GetCanvasCoords.GetCanvasTopCenter(Canvas), Tile.Door);
+                    break;
+                case Cardinals.East:
+                    Set(GetCanvasCoords.GetCanvasRightCenter(Canvas), Tile.Door);
+                    break;
+                case Cardinals.West:
+                    Set(GetCanvasCoords.GetCanvasLeftCenter(Canvas), Tile.Door);
+                    break;
+                case Cardinals.South:
+                    Set(GetCanvasCoords.GetCanvasBottomCenter(Canvas), Tile.Door);
+                    break;
+                case Cardinals.Unknown:
+                    continue;
+                default:
+                    throw new Exception("Neighbor must have a cardinal direction");
+            }
+            ;
+        }
+    }
 
     public virtual void InitMap()
     {
@@ -94,9 +97,11 @@ public class TileMap
             GetCanvasCoords.GetHorizontalLine(Canvas.Size.Height - 1, 0, Canvas.Size.Width),
             Tile.Wall
         );
-		if(Neighbors != null){
-			RenderDoors();
-		}
+
+        if (Neighbors != null)
+        {
+            RenderDoors();
+        }
     }
 
     public void RenderToCanvas()
@@ -125,17 +130,20 @@ public class TileMap
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported room type"),
         };
 
-		public (int x, int y) GetCoordsInFloor(MapGen floor)
-		{
-			(int X, int Y) coord = (-1,-1); //TODO: Fix hardcoded value
-			for (int x = 0; x < floor.Rooms.GetLength(0); x++){
-				for (int y = 0; y < floor.Rooms.GetLength(1); y++){
-					if (floor.Rooms[x, y] == this){
-						coord = (x,y);
-						break;
-					}
-				}
-			}
-			return coord;
-		}
+    public (int x, int y) GetCoordsInFloor(MapGen floor)
+    {
+        (int X, int Y) coord = (-1, -1); //TODO: Fix hardcoded value
+        for (int x = 0; x < floor.Rooms.GetLength(0); x++)
+        {
+            for (int y = 0; y < floor.Rooms.GetLength(1); y++)
+            {
+                if (floor.Rooms[x, y] == this)
+                {
+                    coord = (x, y);
+                    break;
+                }
+            }
+        }
+        return coord;
+    }
 }
