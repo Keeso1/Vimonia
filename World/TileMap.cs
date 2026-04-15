@@ -8,15 +8,13 @@ using Sharpie;
 
 namespace Vimonia.World;
 
-public class TileMap
-{
+public class TileMap {
     public Tile[,] Tiles { get; private set; }
     public Canvas Canvas { get; init; }
     public RoomTypes RoomType { get; set; }
     public List<Cardinals> Neighbors { get; set; }
 
-    public TileMap(Canvas canvas)
-    {
+    public TileMap(Canvas canvas) {
         Canvas = canvas;
     }
 
@@ -32,8 +30,7 @@ public class TileMap
     /// Overload for looping over tuples, ex. a line across the room.
     /// Looping over tuples can be achieved by <c> GetCanvasCoords.GetVerticalLine() </c> or <c> GetCanvasCoords.GetHorizontalLine() </c> helper functions
     /// </summary>
-    protected void Set(IEnumerable<(int x, int y)> coords, Tile tile)
-    {
+    protected void Set(IEnumerable<(int x, int y)> coords, Tile tile) {
         foreach (var coord in coords)
             Tiles[coord.x, coord.y] = tile;
     }
@@ -45,23 +42,17 @@ public class TileMap
 
     public bool IsWalkable(int x, int y) => (x, y).InBounds(Canvas.Size) && Tiles[x, y].Walkable;
 
-    protected void Fill()
-    {
-        for (int w = 0; w < Canvas.Size.Width; w++)
-        {
-            for (int h = 0; h < Canvas.Size.Height; h++)
-            {
+    protected void Fill() {
+        for (int w = 0; w < Canvas.Size.Width; w++) {
+            for (int h = 0; h < Canvas.Size.Height; h++) {
                 Set(w, h, Tile.Floor);
             }
         }
     }
 
-    public void RenderDoors()
-    {
-        foreach (Cardinals neighbor in Neighbors)
-        {
-            switch (neighbor)
-            {
+    public void RenderDoors() {
+        foreach (Cardinals neighbor in Neighbors) {
+            switch (neighbor) {
                 case Cardinals.North:
                     Set(GetCanvasCoords.GetCanvasTopCenter(Canvas), Tile.Door);
                     break;
@@ -83,8 +74,7 @@ public class TileMap
         }
     }
 
-    public virtual void InitMap()
-    {
+    public virtual void InitMap() {
         Tiles = new Tile[Canvas.Size.Width, Canvas.Size.Height];
         Fill();
         Set(GetCanvasCoords.GetVerticalLine(0, 0, Canvas.Size.Height), Tile.Wall);
@@ -98,18 +88,14 @@ public class TileMap
             Tile.Wall
         );
 
-        if (Neighbors != null)
-        {
+        if (Neighbors != null) {
             RenderDoors();
         }
     }
 
-    public void RenderToCanvas()
-    {
-        for (int w = 0; w < Canvas.Size.Width; w++)
-        {
-            for (int h = 0; h < Canvas.Size.Height; h++)
-            {
+    public void RenderToCanvas() {
+        for (int w = 0; w < Canvas.Size.Width; w++) {
+            for (int h = 0; h < Canvas.Size.Height; h++) {
                 Canvas.Glyph(new Point(w, h), Tiles[w, h].Glyph, Style.Default);
             }
         }
@@ -121,8 +107,7 @@ public class TileMap
     // }
 
     public static TileMap GetRoom(RoomTypes type, Canvas canvas) =>
-        type switch
-        {
+        type switch {
             RoomTypes.Spawn => new SpawnRoom(canvas),
             RoomTypes.Normal => new NormalRoom(canvas),
             RoomTypes.Item => new ItemRoom(canvas),
@@ -130,15 +115,11 @@ public class TileMap
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported room type"),
         };
 
-    public (int x, int y) GetCoordsInFloor(MapGen floor)
-    {
+    public (int x, int y) GetCoordsInFloor(MapGen floor) {
         (int X, int Y) coord = (-1, -1); //TODO: Fix hardcoded value
-        for (int x = 0; x < floor.Rooms.GetLength(0); x++)
-        {
-            for (int y = 0; y < floor.Rooms.GetLength(1); y++)
-            {
-                if (floor.Rooms[x, y] == this)
-                {
+        for (int x = 0; x < floor.Rooms.GetLength(0); x++) {
+            for (int y = 0; y < floor.Rooms.GetLength(1); y++) {
+                if (floor.Rooms[x, y] == this) {
                     coord = (x, y);
                     break;
                 }
