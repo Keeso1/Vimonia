@@ -34,9 +34,28 @@ var terminal = new Terminal(
     new TerminalOptions(UseColors: true, CaretMode: CaretMode.Invisible, UseMouse: false, ManagedWindows: true)
 );
 
-var subWindow = terminal.Screen.Window(new(1, 1, terminal.Screen.Size.Width - 2, terminal.Screen.Size.Height - 2));
 
-Canvas canvas = new(subWindow.Size);
+var window = terminal.Screen.Window(new(1, 1, terminal.Screen.Size.Width - 2, terminal.Screen.Size.Height - 2));
+
+//MINIMAP TESTING
+var subWindow = terminal.Screen.Window(new(1, 1, terminal.Screen.Size.Width / 2, terminal.Screen.Size.Height / 2));
+window.Background = (new(' '),
+	new()
+	{
+		Attributes = VideoAttribute.None,
+		ColorMixture = terminal.Colors.MixColors((short) StandardColor.Default, 100)
+	});
+
+subWindow.Background = (new(' '),
+	new()
+	{
+		Attributes = VideoAttribute.None,
+		ColorMixture = terminal.Colors.MixColors((short) StandardColor.Default, 60)
+	});
+//
+
+Canvas canvas = new(window.Size);
+Canvas minimapCanvas = new(subWindow.Size);
 Rng.Init(canvas);
 
 MapGen floor = new(logger, canvas, settings);
@@ -47,21 +66,37 @@ var game = new GameState(
         ColorMixture = terminal.Colors.MixColors(StandardColor.Magenta, StandardColor.Black),
     },
     floor,
-    logger
-) {
+	logger,
+	settings,
+	terminal
+)
+{
     Canvas = canvas,
-    PrevPosition = new(canvas.Size.Width / 2, canvas.Size.Height / 2),
-    CurrentRoom = floor.Rooms[settings.NumberOfRooms + 1, settings.NumberOfRooms + 1]
+	PrevPosition = new(canvas.Size.Width / 2, canvas.Size.Height / 2),
+	CurrentRoom = floor.Rooms[settings.NumberOfRooms +1, settings.NumberOfRooms +1],
+	MinimapCanvas = minimapCanvas
 };
 
 
+
+game.Update(null);
+
 terminal.Repeat(
-    t => {
-        game.Canvas.DrawOnto(
-            t.Screen,
-            new Rectangle(new Point(0, 0), canvas.Size),
-            new Point(0, 0)
-        );
+    t =>
+    {
+		game.Canvas.DrawOnto(
+			window,
+			new Rectangle(new Point(0, 0), canvas.Size),
+			new Point(0, 0)
+		);
+
+		// MINIMAP
+		game.MinimapCanvas.DrawOnto(
+			subWindow,
+			new Rectangle(new Point(0, 0), minimapCanvas.Size),
+			new Point(0, 0)
+		);
+
         t.Screen.Refresh();
         // t.Screen.DrawBorder();
         return Task.CompletedTask;
@@ -87,6 +122,14 @@ terminal.Run(
             case KeyEvent { Char.Value: 'l' }:
                 game.Update(Direction.Right);
                 break;
+			case KeyEvent { Char.Value: 'm'}:
+				subWindow.Visible = !subWindow.Visible; //Toggle window
+                if (subWindow.Visible)
+            	{
+            		window.SendToBack();
+            		subWindow.BringToFront();
+            	}
+				break;
         }
         ;
         return Task.FromResult(true);
