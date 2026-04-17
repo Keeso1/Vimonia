@@ -8,6 +8,8 @@ using Vimonia.World;
 public static class CanvasHelpers
 {
 
+
+
 	public static void RenderToMap(ILogger logger, Canvas canvas, Rune[,] Tiles, Terminal terminal)
 	{
 		int width = Tiles.GetLength(0);
@@ -38,7 +40,7 @@ public static class CanvasHelpers
 
     public static Rune[,] RoomsToString(ILogger logger, GameSettings settings, TileMap[,] Rooms, TileMap currentRoom) //Helper func to see the grid in a clean way
     {
-		Rune[,] map = new Rune[Rooms.GetLength(0), Rooms.GetLength(1)];     
+		Rune[,] map = new Rune[Rooms.GetLength(0), Rooms.GetLength(1)];
    		for (int y = 0; y < Rooms.GetLength(1); y++)
         {
             for (int x = 0; x < Rooms.GetLength(0); x++)
@@ -47,14 +49,14 @@ public static class CanvasHelpers
                 {
 					char roomType = Rooms[x,y].RoomType switch{
 						RoomTypes.Spawn => 's',
-						RoomTypes.Item => 'i',
-						RoomTypes.Boss => 'b',
-						RoomTypes.Normal => 'n',
+						RoomTypes.Item => '¤',
+						RoomTypes.Boss => '☠',
+						RoomTypes.Normal => '⛶',
 						_=> ' '
 					};
 
 					if(Rooms[x,y] == currentRoom){
-						roomType = 'C';
+						roomType = '⛑';
 					}
 
                     map[x, y] = new Rune(roomType); //dafuq

@@ -13,6 +13,7 @@ public abstract class Entity {
     public int MaxHealth { get; set; }
     public bool IsDead => Health <= 0;
     private ILogger _logger {get; set;}
+    public Point Position {get; set;}
 
     private int _tickCount = 0;
     protected Point _playerPos = new(0, 0);

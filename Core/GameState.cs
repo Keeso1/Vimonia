@@ -20,30 +20,15 @@ public sealed class GameState(Style playerBody, MapGen floor, ILogger logger, Ga
     public required TileMap CurrentRoom { get; set; }
 
     public Point PrevPosition { get; set; }
-    public required Canvas Canvas { get; set; }
 
+    public required Canvas Canvas { get; set; }
     public required Canvas MinimapCanvas { get; set; }
 
 
     public void Update(Direction? direction)
     {
-        Point position = direction switch
-        {
-            Direction.Down => PrevPosition with
-            {
-                Y = Math.Clamp(PrevPosition.Y + 1, 0, Canvas.Size.Height - 1),
-            },
-            Direction.Up => PrevPosition with {
-                Y = Math.Clamp(PrevPosition.Y - 1, 0, Canvas.Size.Height - 1),
-            },
-            Direction.Left => PrevPosition with {
-                X = Math.Clamp(PrevPosition.X - 1, 0, Canvas.Size.Width - 1),
-            },
-            Direction.Right => PrevPosition with {
-                X = Math.Clamp(PrevPosition.X + 1, 0, Canvas.Size.Width - 1),
-            },
-            _ => PrevPosition,
-        };
+
+        Point position = Controls.Move(Canvas, direction, PrevPosition);
 
         if (CurrentRoom.Tiles[position.X, position.Y].Glyph == GameConstants.Door) {
 
@@ -51,8 +36,7 @@ public sealed class GameState(Style playerBody, MapGen floor, ILogger logger, Ga
         }
 
 
-        CurrentRoom.RenderToCanvas();
-        Canvas.Glyph(position, GameConstants.Player, playerBody); //Update player position
+        CurrentRoom.RenderToCanvas(); Canvas.Glyph(position, GameConstants.Player, playerBody); //Update player position
         PrevPosition = position;
 
 		Rune[,] map = CanvasHelpers.RoomsToString(logger, settings, floor.Rooms, CurrentRoom);
@@ -60,6 +44,7 @@ public sealed class GameState(Style playerBody, MapGen floor, ILogger logger, Ga
 
         PlayerInput?.Invoke(this, PrevPosition);
     }
+
 
     public Point EnterNewRoom(Point position) {
 
