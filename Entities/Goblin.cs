@@ -1,5 +1,4 @@
 using System.Drawing;
-using Microsoft.Extensions.Logging;
 using Vimonia.Core;
 using Vimonia.Enums;
 
@@ -9,12 +8,12 @@ public class Goblin : Entity{
 
     public int goblinHealth {get; set;}
     public int goblinMaxHealth {get; set;}
-    private ILogger _logger {get; set;}
 
-    public Goblin(int health, int maxHealth, ILogger logger): base(health, maxHealth, EntityType.Enemy, logger){
+    public Goblin(Point position, int health, int maxHealth): base(position, health, maxHealth, EntityType.Enemy){
         goblinHealth = health;
         goblinMaxHealth = MaxHealth;
-        _logger = logger;
+        Position = position;
+
         GameState.PlayerInput += Update;
     }
 

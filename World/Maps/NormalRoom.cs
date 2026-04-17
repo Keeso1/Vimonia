@@ -4,6 +4,7 @@ using Sharpie;
 using System.Drawing;
 
 using Microsoft.Extensions.Logging;
+using Vimonia.Core;
 
 namespace Vimonia.World.Maps;
 
@@ -20,8 +21,11 @@ public class NormalRoom: TileMap{
     public override void InitMap() {
         base.InitMap();
         RoomType = RoomTypes.Normal;
-        Set(GetCanvasCoords.GetCanvasTopCenter(Canvas).Add(0, 2).Clamp(canvas1.Size), Tile.Goblin(_logger));
-        Set(GetCanvasCoords.GetCanvasBottomCenter(Canvas).Subtract(0, 1).Clamp(canvas1.Size), Tile.Goblin(_logger));
+        var g1 = Rng.GetRandomFromCanvas();
+        var g2 = Rng.GetRandomFromCanvas();
+
+        Set(g1, Tile.Goblin(new(g1.Item1, g1.Item2)));
+        Set(g2, Tile.Goblin(new(g2.Item1, g2.Item2)));
     }
 
 }

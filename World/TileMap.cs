@@ -13,11 +13,9 @@ public class TileMap {
     public Canvas Canvas { get; init; }
     public RoomTypes RoomType { get; set; }
     public List<Cardinals> Neighbors { get; set; }
-    protected ILogger _logger;
 
     public TileMap(Canvas canvas, ILogger logger) {
         Canvas = canvas;
-        _logger = logger;
     }
 
     public Tile Get(int x, int y) => Tiles[x, y];
@@ -47,7 +45,7 @@ public class TileMap {
     protected void Fill() {
         for (int w = 0; w < Canvas.Size.Width; w++) {
             for (int h = 0; h < Canvas.Size.Height; h++) {
-                Set(w, h, Tile.Floor(_logger));
+                Set(w, h, Tile.Floor());
             }
         }
     }
@@ -62,16 +60,16 @@ public class TileMap {
         foreach (Cardinals neighbor in Neighbors) {
             switch (neighbor) {
                 case Cardinals.North:
-                    Set(GetCanvasCoords.GetCanvasTopCenter(Canvas), Tile.Door(_logger));
+                    Set(GetCanvasCoords.GetCanvasTopCenter(Canvas), Tile.Door());
                     break;
                 case Cardinals.East:
-                    Set(GetCanvasCoords.GetCanvasRightCenter(Canvas), Tile.Door(_logger));
+                    Set(GetCanvasCoords.GetCanvasRightCenter(Canvas), Tile.Door());
                     break;
                 case Cardinals.West:
-                    Set(GetCanvasCoords.GetCanvasLeftCenter(Canvas), Tile.Door(_logger));
+                    Set(GetCanvasCoords.GetCanvasLeftCenter(Canvas), Tile.Door());
                     break;
                 case Cardinals.South:
-                    Set(GetCanvasCoords.GetCanvasBottomCenter(Canvas), Tile.Door(_logger));
+                    Set(GetCanvasCoords.GetCanvasBottomCenter(Canvas), Tile.Door());
                     break;
                 case Cardinals.Unknown:
                     continue;
@@ -84,16 +82,16 @@ public class TileMap {
     public virtual void InitMap() {
         Tiles = new Tile[Canvas.Size.Width, Canvas.Size.Height];
         Fill();
-        Set(GenRocks(), Tile.Rock(_logger));
-        Set(GetCanvasCoords.GetVerticalLine(0, 0, Canvas.Size.Height), Tile.Wall(_logger));
+        Set(GenRocks(), Tile.Rock());
+        Set(GetCanvasCoords.GetVerticalLine(0, 0, Canvas.Size.Height), Tile.Wall());
         Set(
             GetCanvasCoords.GetVerticalLine(Canvas.Size.Width - 1, 0, Canvas.Size.Height),
-            Tile.Wall(_logger)
+            Tile.Wall()
         );
-        Set(GetCanvasCoords.GetHorizontalLine(0, 0, Canvas.Size.Width), Tile.Wall(_logger));
+        Set(GetCanvasCoords.GetHorizontalLine(0, 0, Canvas.Size.Width), Tile.Wall());
         Set(
             GetCanvasCoords.GetHorizontalLine(Canvas.Size.Height - 1, 0, Canvas.Size.Width),
-            Tile.Wall(_logger)
+            Tile.Wall()
         );
 
         if (Neighbors != null) {

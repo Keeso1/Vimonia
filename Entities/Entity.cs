@@ -12,18 +12,16 @@ public abstract class Entity {
     public int Health { get; set; }
     public int MaxHealth { get; set; }
     public bool IsDead => Health <= 0;
-    private ILogger _logger {get; set;}
     public Point Position {get; set;}
 
     private int _tickCount = 0;
     protected Point _playerPos = new(0, 0);
 
-    protected Entity(int health, int maxhealth, EntityType type, ILogger logger) {
+    protected Entity(Point position, int health, int maxhealth, EntityType type) {
         Health = health;
         MaxHealth = maxhealth;
         Type = type;
-        _logger = logger;
-
+        Position = position;
 
         GameState.PlayerInput += Update;
         GameState.CurrentState += CheckState;
@@ -38,7 +36,8 @@ public abstract class Entity {
 
         _playerPos = playerPos;
 
-        _logger.LogInformation("EVENT: player pos: {pos}", _playerPos);
+        Direction[] directions = Enum.GetValues<Direction>();
+        Controls.Move(directions[Rng.GetRandom().Next(0,3)], Position);
 
     }
 
