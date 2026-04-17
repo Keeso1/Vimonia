@@ -1,4 +1,5 @@
 using System.Drawing;
+using Microsoft.Extensions.Logging;
 using Vimonia.Core;
 using Vimonia.Enums;
 
@@ -11,6 +12,7 @@ public abstract class Entity {
     public int Health { get; set; }
     public int MaxHealth { get; set; }
     public bool IsDead => Health <= 0;
+    private ILogger _logger {get; set;}
 
     private int _tickCount = 0;
     protected Point _playerPos = new(0, 0);
@@ -19,6 +21,8 @@ public abstract class Entity {
         Health = health;
         MaxHealth = maxhealth;
         Type = type;
+        _logger = logger;
+
 
         GameState.PlayerInput += Update;
         GameState.CurrentState += CheckState;
@@ -33,9 +37,7 @@ public abstract class Entity {
 
     }
 
-    protected void CheckPlayer() {
-        if (_tickCount % 2 == 0) {
-            _playerPos = new(2, 2); //TODO: FIX THIS
+        _logger.LogInformation("EVENT: player pos: {pos}", _playerPos);
 
         }
     }

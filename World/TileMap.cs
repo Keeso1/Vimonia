@@ -13,9 +13,11 @@ public class TileMap {
     public Canvas Canvas { get; init; }
     public RoomTypes RoomType { get; set; }
     public List<Cardinals> Neighbors { get; set; }
+    protected ILogger _logger;
 
-    public TileMap(Canvas canvas) {
+    public TileMap(Canvas canvas, ILogger logger) {
         Canvas = canvas;
+        _logger = logger;
     }
 
     public Tile Get(int x, int y) => Tiles[x, y];
@@ -45,7 +47,7 @@ public class TileMap {
     protected void Fill() {
         for (int w = 0; w < Canvas.Size.Width; w++) {
             for (int h = 0; h < Canvas.Size.Height; h++) {
-                Set(w, h, Tile.Floor);
+                Set(w, h, Tile.Floor(_logger));
             }
         }
     }
@@ -60,16 +62,16 @@ public class TileMap {
         foreach (Cardinals neighbor in Neighbors) {
             switch (neighbor) {
                 case Cardinals.North:
-                    Set(GetCanvasCoords.GetCanvasTopCenter(Canvas), Tile.Door);
+                    Set(GetCanvasCoords.GetCanvasTopCenter(Canvas), Tile.Door(_logger));
                     break;
                 case Cardinals.East:
-                    Set(GetCanvasCoords.GetCanvasRightCenter(Canvas), Tile.Door);
+                    Set(GetCanvasCoords.GetCanvasRightCenter(Canvas), Tile.Door(_logger));
                     break;
                 case Cardinals.West:
-                    Set(GetCanvasCoords.GetCanvasLeftCenter(Canvas), Tile.Door);
+                    Set(GetCanvasCoords.GetCanvasLeftCenter(Canvas), Tile.Door(_logger));
                     break;
                 case Cardinals.South:
-                    Set(GetCanvasCoords.GetCanvasBottomCenter(Canvas), Tile.Door);
+                    Set(GetCanvasCoords.GetCanvasBottomCenter(Canvas), Tile.Door(_logger));
                     break;
                 case Cardinals.Unknown:
                     continue;
@@ -82,16 +84,16 @@ public class TileMap {
     public virtual void InitMap() {
         Tiles = new Tile[Canvas.Size.Width, Canvas.Size.Height];
         Fill();
-        Set(GenRocks(), Tile.Rock);
-        Set(GetCanvasCoords.GetVerticalLine(0, 0, Canvas.Size.Height), Tile.Wall);
+        Set(GenRocks(), Tile.Rock(_logger));
+        Set(GetCanvasCoords.GetVerticalLine(0, 0, Canvas.Size.Height), Tile.Wall(_logger));
         Set(
             GetCanvasCoords.GetVerticalLine(Canvas.Size.Width - 1, 0, Canvas.Size.Height),
-            Tile.Wall
+            Tile.Wall(_logger)
         );
-        Set(GetCanvasCoords.GetHorizontalLine(0, 0, Canvas.Size.Width), Tile.Wall);
+        Set(GetCanvasCoords.GetHorizontalLine(0, 0, Canvas.Size.Width), Tile.Wall(_logger));
         Set(
             GetCanvasCoords.GetHorizontalLine(Canvas.Size.Height - 1, 0, Canvas.Size.Width),
-            Tile.Wall
+            Tile.Wall(_logger)
         );
 
         if (Neighbors != null) {
@@ -112,12 +114,12 @@ public class TileMap {
     // 	// RenderToCanvas();
     // }
 
-    public static TileMap GetRoom(RoomTypes type, Canvas canvas) =>
+    public static TileMap GetRoom(RoomTypes type, Canvas canvas, ILogger logger) =>
         type switch {
-            RoomTypes.Spawn => new SpawnRoom(canvas),
-            RoomTypes.Normal => new NormalRoom(canvas),
-            RoomTypes.Item => new ItemRoom(canvas),
-            RoomTypes.Boss => new BossRoom(canvas),
+            RoomTypes.Spawn => new SpawnRoom(canvas, logger),
+            RoomTypes.Normal => new NormalRoom(canvas, logger),
+            RoomTypes.Item => new ItemRoom(canvas, logger),
+            RoomTypes.Boss => new BossRoom(canvas, logger),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported room type"),
         };
 

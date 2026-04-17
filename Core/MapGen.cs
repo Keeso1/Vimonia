@@ -21,7 +21,8 @@ public class MapGen {
         _logger = Logger;
         Rooms[Settings.NumberOfRooms + 1, Settings.NumberOfRooms + 1] = TileMap.GetRoom(
             RoomTypes.Spawn,
-            canvas
+            canvas,
+            _logger
         );
         Rooms[Settings.NumberOfRooms + 1, Settings.NumberOfRooms + 1].InitMap();
         Size = new(Rooms.GetLength(0), Rooms.GetLength(1));
@@ -62,13 +63,13 @@ public class MapGen {
         var rand = new Random();
         (int x, int y) randRoom = activeRooms[rand.Next(activeRooms.Count)];
 
-        Rooms[randRoom.x, randRoom.y] = TileMap.GetRoom(RoomTypes.Item, canvas);
+        Rooms[randRoom.x, randRoom.y] = TileMap.GetRoom(RoomTypes.Item, canvas, logger);
         Rooms[randRoom.x, randRoom.y].InitMap();
     }
 
     private void GenerateBossRoom(ILogger _logger, Canvas canvas) {
         (int x, int y) = BFS.Execute(Rooms, Settings); //Breadth-first-search
-        Rooms[x, y] = TileMap.GetRoom(RoomTypes.Boss, canvas);
+        Rooms[x, y] = TileMap.GetRoom(RoomTypes.Boss, canvas, _logger);
         Rooms[x, y].InitMap();
     }
 
@@ -136,7 +137,8 @@ public class MapGen {
                 var randomRoom = checkedRooms[r];
                 Rooms[randomRoom.Item1, randomRoom.Item2] = TileMap.GetRoom(
                     RoomTypes.Normal,
-                    canvas
+                    canvas,
+                    _logger
                 );
 
                 Rooms[randomRoom.Item1, randomRoom.Item2].InitMap();
