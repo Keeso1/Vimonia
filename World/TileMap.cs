@@ -40,6 +40,10 @@ public class TileMap {
     ///</summary>
     protected void Set((int x, int y) coord, Tile tile) => Tiles[coord.x, coord.y] = tile;
 
+    protected void Set(Point coord, Tile tile) => Tiles[coord.X, coord.Y] = tile;
+
+    protected void UnSet(Point coord) => Tiles[coord.X, coord.Y] = Tile.Floor();
+
     public bool IsWalkable(int x, int y) => (x, y).InBounds(Canvas.Size) && Tiles[x, y].Walkable;
 
     protected void Fill() {

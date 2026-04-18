@@ -58,7 +58,7 @@ CanvasWrapper.Init(window.Size);
 
 Canvas minimapCanvas = new(subWindow.Size);
 
-Rng.Init(CanvasWrapper.Instance);
+Rng.Init(CanvasWrapper.Instance, 4);
 
 MapGen floor = new(logger, CanvasWrapper.Instance, settings);
 

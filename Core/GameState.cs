@@ -11,8 +11,6 @@ namespace Vimonia.Core;
 
 public sealed class GameState(Style playerBody, MapGen floor, ILogger logger, GameSettings settings, Terminal terminal)
 {
-
-
     public static event EventHandler<Point> PlayerInput;
     public static event EventHandler<GamePhase> CurrentState;
     public static event Action? OnTick; //TODO: Keep or not to keep? That is the question...
@@ -36,13 +34,14 @@ public sealed class GameState(Style playerBody, MapGen floor, ILogger logger, Ga
         }
 
 
-        CurrentRoom.RenderToCanvas(); Canvas.Glyph(position, GameConstants.Player, playerBody); //Update player position
+        PlayerInput?.Invoke(this, PrevPosition);
+        CurrentRoom.RenderToCanvas();
+        Canvas.Glyph(position, GameConstants.Player, playerBody); //Update player position
         PrevPosition = position;
 
 		Rune[,] map = CanvasHelpers.RoomsToString(logger, settings, floor.Rooms, CurrentRoom);
 		CanvasHelpers.RenderToMap(logger, MinimapCanvas, map, terminal);
 
-        PlayerInput?.Invoke(this, PrevPosition);
     }
 
 
@@ -65,8 +64,7 @@ public sealed class GameState(Style playerBody, MapGen floor, ILogger logger, Ga
         var (newRoomx, newRoomy) = CurrentRoom.GetCoordsInFloor(floor);
         var offset = (newRoomx - roomX, newRoomy - roomY);
 
-        var directionOfNewRoom = Utils.TupleExtensions.ToCardinal(offset);
-        position = directionOfNewRoom switch {
+        var directionOfNewRoom = Utils.TupleExtensions.ToCardinal(offset); position = directionOfNewRoom switch {
 
             Cardinals.North => new(GetCanvasCoords.GetCanvasBottomCenter(Canvas).Item1, GetCanvasCoords.GetCanvasBottomCenter(Canvas).Item2 - 1), // minus one so it is not on the door
             Cardinals.East => new(GetCanvasCoords.GetCanvasLeftCenter(Canvas).Item1 + 1, GetCanvasCoords.GetCanvasLeftCenter(Canvas).Item2),
