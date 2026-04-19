@@ -30,15 +30,16 @@ public class EnemyRoom : TileMap
     public void GenerateEnemies()
     {
         int numberOfEnemies = Rng.GetRandom().Next(1, 10);
-        HashSet<Point> visitedTiles = [];
+        int allTilesLen = CanvasWrapper.AllCanvasPoints().Count;
 
         for (int num = 0; num < numberOfEnemies; num++)
         {
+            HashSet<Point> visitedTiles = [];
             Point position;
             do{
                 position = Rng.GetRandomFromCanvas().ToPoint();
                 visitedTiles.Add(position);
-                if(visitedTiles == CanvasWrapper.AllCanvasPoints()){
+                if(visitedTiles.Count >= allTilesLen){
                     position = new(-1,-1);
                     break;
                 }
