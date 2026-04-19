@@ -18,7 +18,7 @@ public abstract class Entity {
     public static event EnemyInfo EnemyMove;
 
     private int _tickCount = 0;
-    protected Point _playerPos = new(0, 0);
+    protected Point _playerPos = new(0,0);
 
     protected Entity(Point position, int health, int maxhealth, EntityType type) {
         Health = health;
@@ -40,7 +40,7 @@ public abstract class Entity {
         _playerPos = playerPos;
 
         Direction[] directions = Enum.GetValues<Direction>();
-        Point newPos = Controls.Move(directions[Rng.GetRandom().Next(0, 4)], Position);
+        Point newPos = Controls.Move(directions[Rng.GetRandom().Next(0, 4)], Position, _playerPos);
         PrevPosition = Position;
         Position = newPos;
         EnemyMove?.Invoke(this);

@@ -23,4 +23,26 @@ public static class Controls{
         };
         return position;
     }
+
+
+    public static Point Move(Direction? direction, Point PrevPosition, Point playerPos){
+        Point position = direction switch
+        {
+            Direction.Down => PrevPosition with
+            {
+                Y = Math.Clamp(PrevPosition.Y + 1, 1, CanvasWrapper.Instance.Size.Height - 2),
+            },
+            Direction.Up => PrevPosition with {
+                Y = Math.Clamp(PrevPosition.Y - 1, 1, CanvasWrapper.Instance.Size.Height - 2),
+            },
+            Direction.Left => PrevPosition with {
+                X = Math.Clamp(PrevPosition.X - 1, 1, CanvasWrapper.Instance.Size.Width - 2),
+            },
+            Direction.Right => PrevPosition with {
+                X = Math.Clamp(PrevPosition.X + 1, 1, CanvasWrapper.Instance.Size.Width - 2),
+            },
+            _ => PrevPosition,
+        };
+        return position;
+    }
 }
