@@ -1,4 +1,5 @@
 using System.Drawing;
+using Sharpie;
 using Vimonia.Core;
 using Vimonia.Interfaces;
 using Vimonia.Enums;
@@ -7,8 +8,9 @@ namespace Vimonia.Entities;
 
 public sealed class Player : IEntity {
 
-    public static event Action<ISkill> UsedSkill;
+    public event Action<ISkill> UsedSkill;
 
+    public EntityType Type { get; set; }
     public int Health { get; private set; }
     public int MaxHealth { get; private set; }
     public bool IsDead => Health <= 0;
@@ -19,6 +21,7 @@ public sealed class Player : IEntity {
         Health = health;
         MaxHealth = maxHealth;
         if (skills != null) AddSkills(skills);
+        Type = EntityType.Player;
 
         GameState.PlayerInput += OnPlayerInput;
         GameState.OnTick += Update;
@@ -32,13 +35,8 @@ public sealed class Player : IEntity {
     }
 
     private void CheckState(object? sender, GamePhase phase) {
-        switch (phase) {
-            case GamePhase.Running: return;
-            default: {
-                    GameState.CurrentState -= CheckState;
-                    break;
-                }
-        }
+        if (phase == GamePhase.Running) return;
+        Unsub();
     }
 
     public void UseSkill(string combo) {
@@ -55,16 +53,19 @@ public sealed class Player : IEntity {
     public void AddSkill(ISkill skill) => Skills[skill.Combination] = skill;
 
     public void TakeDamage(int damage) {
-        if (Health >= 0) Health -= damage;
+        if (Health >= 0 || !IsDead)
+            Health = Math.Max(0, Health - damage);
     }
 
     public void Heal(int heal) {
-        if (Health < MaxHealth) Health += heal;
+        if (Health < MaxHealth || !IsDead)
+            Health = Math.Min(MaxHealth, Health + heal);
     }
 
     private void Unsub() {
         GameState.PlayerInput -= OnPlayerInput;
         GameState.OnTick -= Update;
+        GameState.CurrentState -= CheckState;
     }
 }
 
