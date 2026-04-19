@@ -30,18 +30,29 @@ public class EnemyRoom : TileMap
     public void GenerateEnemies()
     {
         int numberOfEnemies = Rng.GetRandom().Next(1, 10);
+        HashSet<Point> visitedTiles = [];
+
         for (int num = 0; num < numberOfEnemies; num++)
         {
             Point position;
-            do
-            {
+            do{
                 position = Rng.GetRandomFromCanvas().ToPoint();
+                visitedTiles.Add(position);
+                if(visitedTiles == CanvasWrapper.AllCanvasPoints()){
+                    position = new(-1,-1);
+                    break;
+                }
             }
-            while (!Tiles[position.X, position.Y].Walkable || Tiles[position.X, position.Y].Entity is not null);
+            while(!Tiles[position.X, position.Y].Walkable || Tiles[position.X, position.Y].Entity is not null);
 
-            _enemyBuffer.Add(new Goblin(position, 100, 100, this));
+
+            if(position != position with {X = -1, Y = -1}){
+                _enemyBuffer.Add(new Goblin(position, 100, 100, this));
+            } else {
+                throw new Exception("No available positions to place tile");
+            }
         }
-    }
+    } //Evil fuckhack! #HACKTHEPLANET!
 
     public override void InitMap()
     {
