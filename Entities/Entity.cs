@@ -2,6 +2,7 @@ using System.Drawing;
 using Vimonia.Core;
 using Vimonia.Enums;
 using Vimonia.World;
+using Vimonia.Interfaces;
 
 namespace Vimonia.Entities;
 
