@@ -1,15 +1,12 @@
 using System.Drawing;
 using System.Text;
-using Microsoft.Extensions.Logging;
 using Sharpie;
 using Vimonia.Enums;
 using Vimonia.World;
 
 public static class CanvasHelpers {
 
-
-
-    public static void RenderToMap(ILogger logger, Canvas canvas, Rune[,] Tiles, Terminal terminal) {
+    public static void RenderToMap(Canvas canvas, Rune[,] Tiles, Terminal terminal) {
         int width = Tiles.GetLength(0);
         int height = Tiles.GetLength(1);
 
@@ -33,7 +30,7 @@ public static class CanvasHelpers {
         }
     }
 
-    public static Rune[,] RoomsToString(ILogger logger, GameSettings settings, TileMap[,] Rooms, TileMap currentRoom) //Helper func to see the grid in a clean way
+    public static Rune[,] RoomsToString(GameSettings settings, TileMap[,] Rooms, TileMap currentRoom) //Helper func to see the grid in a clean way
     {
         Rune[,] map = new Rune[Rooms.GetLength(0), Rooms.GetLength(1)];
         for (int y = 0; y < Rooms.GetLength(1); y++) {

@@ -1,7 +1,5 @@
 using System.Drawing;
 using System.Text;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Vimonia.Enums;
 using Vimonia.Utils;
 using Vimonia.World;
@@ -11,18 +9,15 @@ namespace Vimonia.Core;
 
 public class MapGen {
     public TileMap[,] Rooms { get; private set; }
-    private readonly ILogger _logger;
     private GameSettings Settings { get; set; }
     private Size Size { get; set; }
 
-    public MapGen(ILogger Logger, Canvas canvas, GameSettings settings) {
+    public MapGen(Canvas canvas, GameSettings settings) {
         Settings = settings;
         Rooms = new TileMap[(Settings.NumberOfRooms + 1) * 2, (Settings.NumberOfRooms + 1) * 2];
-        _logger = Logger;
         Rooms[Settings.NumberOfRooms + 1, Settings.NumberOfRooms + 1] = TileMap.GetRoom(
             RoomTypes.Spawn,
-            canvas,
-            _logger
+            canvas
         );
         Rooms[Settings.NumberOfRooms + 1, Settings.NumberOfRooms + 1].InitMap();
         Size = new(Rooms.GetLength(0), Rooms.GetLength(1));
@@ -31,15 +26,15 @@ public class MapGen {
             Generate(canvas);
         } // Generate layout
 
-        GenerateBossRoom(_logger, canvas); // Add bossroom at furthest x value
-        GenerateItemRoom(_logger, canvas);
+        GenerateBossRoom(canvas); // Add bossroom at furthest x value
+        GenerateItemRoom(canvas);
         SetDoors();
         foreach (var (x, y) in GetNonEmptyRooms()) {
             Rooms[x, y].InitMap();
         }
     }
 
-    private void GenerateItemRoom(ILogger logger, Canvas canvas) {
+    private void GenerateItemRoom(Canvas canvas) {
         List<(int x, int y)> activeRooms = [];
 
         for (int x = 0; x < Rooms.GetLength(0); x++) {
@@ -63,13 +58,13 @@ public class MapGen {
         var rand = new Random();
         (int x, int y) randRoom = activeRooms[rand.Next(activeRooms.Count)];
 
-        Rooms[randRoom.x, randRoom.y] = TileMap.GetRoom(RoomTypes.Item, canvas, logger);
+        Rooms[randRoom.x, randRoom.y] = TileMap.GetRoom(RoomTypes.Item, canvas);
         Rooms[randRoom.x, randRoom.y].InitMap();
     }
 
-    private void GenerateBossRoom(ILogger _logger, Canvas canvas) {
+    private void GenerateBossRoom(Canvas canvas) {
         (int x, int y) = BFS.Execute(Rooms, Settings); //Breadth-first-search
-        Rooms[x, y] = TileMap.GetRoom(RoomTypes.Boss, canvas, _logger);
+        Rooms[x, y] = TileMap.GetRoom(RoomTypes.Boss, canvas);
         Rooms[x, y].InitMap();
     }
 
@@ -123,29 +118,28 @@ public class MapGen {
     public void Generate(Canvas canvas) {
         var rand = new Random();
         List<(int, int)> activeRooms = GetNonEmptyRooms();
-        _logger.LogInformation("active rooms count {ac}", activeRooms.Count);
+        Log.Info($"active rooms count {activeRooms.Count}");
 
         // Retry until we find an expandable room or run out of candidates
         while (activeRooms.Count > 0) {
             var selIdx = rand.Next(activeRooms.Count);
             (int, int) selRoom = activeRooms[selIdx];
             var checkedRooms = CheckRooms(selRoom);
-            _logger.LogInformation("checkedRooms: {chrooms}", checkedRooms);
+            Log.Info($"checkedRooms: {checkedRooms.Count}");
             if (checkedRooms.Count > 0) {
                 // Successfully found an expandable room
                 var r = rand.Next(checkedRooms.Count);
                 var randomRoom = checkedRooms[r];
                 Rooms[randomRoom.Item1, randomRoom.Item2] = TileMap.GetRoom(
                     RoomTypes.Normal,
-                    canvas,
-                    _logger
+                    canvas
                 );
 
                 Rooms[randomRoom.Item1, randomRoom.Item2].InitMap();
                 break;
             } else {
                 // This room cannot expand, remove it from candidates
-                _logger.LogInformation("removing Room at {index}", selIdx);
+                Log.Info($"removing Room at {selIdx}");
                 activeRooms.RemoveAt(selIdx);
             }
         }

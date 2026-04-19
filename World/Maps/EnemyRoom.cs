@@ -1,7 +1,6 @@
 using Vimonia.Enums;
 using Vimonia.Utils;
 using Sharpie;
-using Microsoft.Extensions.Logging;
 using Vimonia.Core;
 using Vimonia.Entities;
 using System.Drawing;
@@ -12,12 +11,10 @@ public class EnemyRoom : TileMap
 {
     private List<Entity> _enemyBuffer = [];
     private Canvas canvas1 { get; set; }
-    protected ILogger _logger { get; set; }
 
-    public EnemyRoom(Canvas canvas, ILogger logger) : base(canvas, logger)
+    public EnemyRoom(Canvas canvas) : base(canvas)
     {
         canvas1 = canvas;
-        _logger = logger;
         Entity.EnemyMove += Update;
     }
 

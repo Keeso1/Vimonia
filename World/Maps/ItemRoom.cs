@@ -1,11 +1,10 @@
-using Microsoft.Extensions.Logging;
 using Vimonia.Enums;
 using Vimonia.Utils;
 using Sharpie;
 
 namespace Vimonia.World.Maps;
 
-public class ItemRoom(Canvas canvas, ILogger logger) : TileMap(canvas, logger) {
+public class ItemRoom(Canvas canvas) : TileMap(canvas) {
     public override void InitMap() {
         base.InitMap();
         RoomType = RoomTypes.Item;

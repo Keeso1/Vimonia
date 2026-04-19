@@ -1,5 +1,4 @@
 using System.Drawing;
-using Microsoft.Extensions.Logging;
 using Vimonia.Core;
 using Vimonia.Enums;
 using Vimonia.Utils;
@@ -14,7 +13,7 @@ public class TileMap {
     public RoomTypes RoomType { get; set; }
     public List<Cardinals> Neighbors { get; set; }
 
-    public TileMap(Canvas canvas, ILogger logger) {
+    public TileMap(Canvas canvas) {
         Canvas = canvas;
     }
 
@@ -116,12 +115,12 @@ public class TileMap {
     // 	// RenderToCanvas();
     // }
 
-    public static TileMap GetRoom(RoomTypes type, Canvas canvas, ILogger logger) =>
+    public static TileMap GetRoom(RoomTypes type, Canvas canvas) =>
         type switch {
-            RoomTypes.Spawn => new SpawnRoom(canvas, logger),
-            RoomTypes.Normal => new EnemyRoom(canvas, logger),
-            RoomTypes.Item => new ItemRoom(canvas, logger),
-            RoomTypes.Boss => new BossRoom(canvas, logger),
+            RoomTypes.Spawn => new SpawnRoom(canvas),
+            RoomTypes.Normal => new EnemyRoom(canvas),
+            RoomTypes.Item => new ItemRoom(canvas),
+            RoomTypes.Boss => new BossRoom(canvas),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported room type"),
         };
 

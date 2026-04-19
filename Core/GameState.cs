@@ -9,9 +9,9 @@ using System.Text;
 
 namespace Vimonia.Core;
 
-public sealed class GameState(Style playerBody, MapGen floor, ILogger logger, GameSettings settings, Terminal terminal) {
-    public static event EventHandler<Point> PlayerInput;
+public sealed class GameState(Style playerBody, MapGen floor, GameSettings settings, Terminal terminal) {
     public static event EventHandler<GamePhase> CurrentState;
+    public static event EventHandler<Point> PlayerInput;
     public static event Action? OnTick; //TODO: Keep or not to keep? That is the question...
 
     public required TileMap CurrentRoom { get; set; }
@@ -36,8 +36,8 @@ public sealed class GameState(Style playerBody, MapGen floor, ILogger logger, Ga
         Canvas.Glyph(position, GameConstants.Player, playerBody); //Update player position
         PrevPosition = position;
 
-        Rune[,] map = CanvasHelpers.RoomsToString(logger, settings, floor.Rooms, CurrentRoom);
-        CanvasHelpers.RenderToMap(logger, MinimapCanvas, map, terminal);
+        Rune[,] map = CanvasHelpers.RoomsToString(settings, floor.Rooms, CurrentRoom);
+        CanvasHelpers.RenderToMap(MinimapCanvas, map, terminal);
         PlayerInput?.Invoke(this, PrevPosition);
     }
 

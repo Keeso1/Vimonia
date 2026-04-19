@@ -1,13 +1,12 @@
 using Vimonia.Enums;
 using Sharpie;
 
-using Microsoft.Extensions.Logging;
 using Vimonia.Core;
 
 namespace Vimonia.World.Maps;
 
 
-public class BossRoom(Canvas canvas, ILogger logger) : EnemyRoom(canvas, logger) {
+public class BossRoom(Canvas canvas) : EnemyRoom(canvas) {
     public override void InitMap() {
         base.InitMap();
         RoomType = RoomTypes.Boss;
