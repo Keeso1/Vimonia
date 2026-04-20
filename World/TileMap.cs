@@ -8,10 +8,10 @@ using Sharpie;
 namespace Vimonia.World;
 
 public class TileMap {
-    public Tile[,] Tiles { get; private set; }
+    public Tile[,] Tiles { get; private set; } = null!;
     public Canvas Canvas { get; init; }
     public RoomTypes RoomType { get; set; }
-    public List<Cardinals> Neighbors { get; set; }
+    public List<Cardinals> Neighbors { get; set; } = [];
 
     public TileMap(Canvas canvas) {
         Canvas = canvas;
@@ -34,6 +34,12 @@ public class TileMap {
             Tiles[coord.x, coord.y] = tile;
     }
 
+    protected void Set(List<Point> coords, Tile tile) {
+        for (int idx = 0; idx < coords.Count(); idx++) {
+            Tiles[coords[idx].X, coords[idx].Y] = tile;
+        }
+    }
+
     ///<summary>
     ///Overload to be able to accept tuples using <c> GetCanvasCoords </c> helper class
     ///</summary>
@@ -42,6 +48,15 @@ public class TileMap {
     protected void Set(Point coord, Tile tile) => Tiles[coord.X, coord.Y] = tile;
 
     protected void UnSet(Point coord) => Tiles[coord.X, coord.Y] = Tile.Floor();
+
+    ///<summary>
+    /// jeely bely rat havee braa iinnn
+    ///</summary>
+    protected void UnSet(List<Point> coords) {
+        foreach (var coord in coords) {
+            Tiles[coord.X, coord.Y] = Tile.Floor();
+        }
+    }
 
     public bool IsWalkable(int x, int y) => (x, y).InBounds(Canvas.Size) && Tiles[x, y].Walkable;
 
@@ -82,6 +97,9 @@ public class TileMap {
         }
     }
 
+    public virtual void Activate() { }
+    public virtual void Deactivate() { }
+
     public virtual void InitMap() {
         Tiles = new Tile[Canvas.Size.Width, Canvas.Size.Height];
         Fill();
@@ -103,9 +121,22 @@ public class TileMap {
     }
 
     public void RenderToCanvas() {
-        for (int w = 0; w < Canvas.Size.Width; w++) {
-            for (int h = 0; h < Canvas.Size.Height; h++) {
-                Canvas.Glyph(new Point(w, h), Tiles[w, h].Glyph, Style.Default);
+        for (int h = 0; h < Canvas.Size.Height; h++) {
+            var text = "";
+            for (int w = 0; w < Canvas.Size.Width; w++) {
+                if (text.Length > 0) {
+                    Canvas.Text(new Point(w, h), text[0].ToString(), Canvas.Orientation.Horizontal, Style.Default);
+                    text = text[1..];
+                    continue;
+                }
+
+                if (Tiles[w, h].Entity != null && !string.IsNullOrEmpty(Tiles[w, h].Text)) {
+                    text = Tiles[w, h].Text;
+                    Canvas.Text(new Point(w, h), text[0].ToString(), Canvas.Orientation.Horizontal, Style.Default);
+                    text = text[1..];
+                } else {
+                    Canvas.Glyph(new Point(w, h), Tiles[w, h].Glyph, Style.Default);
+                }
             }
         }
     }
