@@ -6,6 +6,7 @@ using Vimonia.Utils;
 using Vimonia.World;
 using Sharpie;
 using System.Text;
+using Vimonia.World.Maps;
 
 namespace Vimonia.Core;
 
@@ -49,6 +50,10 @@ public sealed class GameState(Style playerBody, MapGen floor, GameSettings setti
         var (roomX, roomY) = CurrentRoom.GetCoordsInFloor(floor);
         if ((roomX, roomY) == (-1, -1)) {
             throw new Exception("Current room has no coords");
+        }
+
+        if (CurrentRoom is EnemyRoom room) {
+            room.Dispose();
         }
 
         CurrentRoom = (position.X, position.Y) switch {

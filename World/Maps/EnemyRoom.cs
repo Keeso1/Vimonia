@@ -9,7 +9,13 @@ namespace Vimonia.World.Maps;
 
 public class EnemyRoom : TileMap {
     private List<Entity> _enemyBuffer = [];
+
     private Canvas canvas1 { get; set; }
+
+
+    public void Dispose() {
+        Entity.EnemyMove -= Update;
+    }
 
     public EnemyRoom(Canvas canvas) : base(canvas) {
         canvas1 = canvas;
@@ -17,35 +23,55 @@ public class EnemyRoom : TileMap {
     }
 
 
-    public Task Update(Entity entity) {
-        if (!_enemyBuffer.Contains(entity)) return Task.CompletedTask;
-        UnSet(entity.PrevPosition);
-        Set(entity.Position, Tile.Goblin(entity));
+    public Task Update(Entity enemy) {
+        if (!_enemyBuffer.Contains(enemy)) return Task.CompletedTask;
+        UnSet(CanvasHelpers.GetWordBound(enemy.PrevPosition, enemy.Body));
+        Set(CanvasHelpers.GetWordBound(enemy.Position, enemy.Body), Tile.Goblin(enemy));
         return Task.CompletedTask;
     }
 
+
     public void GenerateEnemies() {
         int numberOfEnemies = Rng.GetRandom().Next(1, 10);
-        int allTilesLen = CanvasWrapper.AllCanvasPoints().Count;
+        var canvasSize = CanvasWrapper.Instance.Size;
+        int maxAttempts = (canvasSize.Width - 2) * (canvasSize.Height - 2);
 
         for (int num = 0; num < numberOfEnemies; num++) {
             HashSet<Point> visitedTiles = [];
-            Point position;
-            do {
-                position = Rng.GetRandomFromCanvas().ToPoint();
-                visitedTiles.Add(position);
-                if (visitedTiles.Count >= allTilesLen) {
-                    position = new(-1, -1);
+            Point position = new(-1, -1);
+            string body = "Goblin"; 
+
+            while (visitedTiles.Count < maxAttempts) {
+                Point candidate = Rng.GetRandomFromCanvas().ToPoint();
+                if (!visitedTiles.Add(candidate)) continue;
+
+                var wordBound = CanvasHelpers.GetWordBound(candidate, body);
+                
+                if (!wordBound.InBounds(canvasSize)) continue;
+
+                bool canPlace = true;
+                foreach (var p in wordBound) {
+                    if (!Tiles[p.X, p.Y].Walkable || Tiles[p.X, p.Y].Entity is not null) {
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+                if (canPlace) {
+                    position = candidate;
                     break;
                 }
             }
-            while (!Tiles[position.X, position.Y].Walkable || Tiles[position.X, position.Y].Entity is not null);
 
 
-            if (position != position with { X = -1, Y = -1 }) {
-                _enemyBuffer.Add(new Goblin(position, 100, 100, this));
+            if (position.X != -1) {
+                var goblin = new Goblin(position, 100, 100, this);
+                _enemyBuffer.Add(goblin);
+                // Mark tiles immediately so they are taken for the next enemy in this same room generation
+                Set(CanvasHelpers.GetWordBound(position, goblin.Body), Tile.Goblin(goblin));
             } else {
-                throw new Exception("No available positions to place tile");
+                // If we can't place more enemies, just stop instead of throwing and crashing the game
+                break; 
             }
         }
     } //Evil fuckhack! #HACKTHEPLANET!
@@ -56,8 +82,7 @@ public class EnemyRoom : TileMap {
 
         GenerateEnemies();
         foreach (Entity enemy in _enemyBuffer) {
-            CanvasWrapper.Instance.Text(enemy.Position, enemy.Body, Canvas.Orientation.Horizontal, Style.Default);
-            // Set(enemy.Position, Tile.Goblin(enemy));
+            Set(CanvasHelpers.GetWordBound(enemy.Position, enemy.Body), Tile.Goblin(enemy));
         }
     }
 
