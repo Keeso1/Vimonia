@@ -13,5 +13,6 @@ public class Goblin : Entity {
     public Goblin(Point position, int health, int maxHealth, TileMap currentRoom) : base(position, health, maxHealth, currentRoom, EntityType.Enemy) {
         goblinHealth = health;
         goblinMaxHealth = MaxHealth;
+        Body = "Goblin";
     }
 }

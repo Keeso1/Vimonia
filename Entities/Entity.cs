@@ -17,9 +17,10 @@ public abstract class Entity : IEntity {
     public Point PrevPosition { get; set; }
     private TileMap _currentRoom { get; set; }
     private static readonly Direction[] s_directions = Enum.GetValues<Direction>();
+    public string Body { get; set; } = string.Empty;
 
     public delegate Task EnemyInfo(Entity sender);
-    public static event EnemyInfo EnemyMove;
+    public static event EnemyInfo? EnemyMove;
 
     private int _tickCount = 0;
     protected Point _playerPos = new(0, 0);
@@ -36,7 +37,7 @@ public abstract class Entity : IEntity {
 
     }
 
-    protected virtual void Update(object sender, Point playerPos) {
+    protected virtual void Update(object? sender, Point playerPos) {
         _tickCount++;
         if (IsDead) {
             GameState.CurrentState -= CheckState;
@@ -51,13 +52,6 @@ public abstract class Entity : IEntity {
         Position = newPos;
         EnemyMove?.Invoke(this);
     }
-
-    // protected void CheckPlayer() {
-    //     if (_tickCount % 2 == 0) {
-    //         _playerPos = new(2, 2); //TODO: FIX THIS
-    //
-    //     }
-    // }
 
     protected void CheckState(object? sender, GamePhase phase) {
         if (phase is GamePhase.Running) return;

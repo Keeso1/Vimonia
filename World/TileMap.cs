@@ -8,10 +8,10 @@ using Sharpie;
 namespace Vimonia.World;
 
 public class TileMap {
-    public Tile[,] Tiles { get; private set; }
+    public Tile[,] Tiles { get; private set; } = null!;
     public Canvas Canvas { get; init; }
     public RoomTypes RoomType { get; set; }
-    public List<Cardinals> Neighbors { get; set; }
+    public List<Cardinals> Neighbors { get; set; } = [];
 
     public TileMap(Canvas canvas) {
         Canvas = canvas;
@@ -105,7 +105,11 @@ public class TileMap {
     public void RenderToCanvas() {
         for (int w = 0; w < Canvas.Size.Width; w++) {
             for (int h = 0; h < Canvas.Size.Height; h++) {
-                Canvas.Glyph(new Point(w, h), Tiles[w, h].Glyph, Style.Default);
+                if (Tiles[w, h].Entity != null) {
+                    Canvas.Text(new Point(w, h), Tiles[w, h].Text, Canvas.Orientation.Horizontal, Style.Default);
+                } else {
+                    Canvas.Glyph(new Point(w, h), Tiles[w, h].Glyph, Style.Default);
+                }
             }
         }
     }
