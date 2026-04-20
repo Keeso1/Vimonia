@@ -1,5 +1,6 @@
 using System.Drawing;
 using Vimonia.Enums;
+using Vimonia.Interfaces;
 
 namespace Vimonia.Utils;
 
@@ -13,10 +14,10 @@ public static class TupleExtensions {
     }
 
     public static IEnumerable<Point> GetCardinalNeighbours(this Point t) {
-        yield return t with {Y = t.Y - 1}; //North
-        yield return t with {X = t.X - 1}; //West
-        yield return t with {X = t.X + 1}; //East
-        yield return t with {Y = t.Y + 1}; //South
+        yield return t with { Y = t.Y - 1 }; //North
+        yield return t with { X = t.X - 1 }; //West
+        yield return t with { X = t.X + 1 }; //East
+        yield return t with { Y = t.Y + 1 }; //South
     }
 
     public static Cardinals ToCardinal(this (int x, int y) offset) {
@@ -31,20 +32,29 @@ public static class TupleExtensions {
 
     public static Point IncrementCardinal(this Point pos, Cardinals direction) {
         return direction switch {
-            Cardinals.North => pos with {Y = Math.Clamp(pos.Y - 1, 1, CanvasWrapper.Instance.Size.Height - 2)},
-            Cardinals.West => pos with {X = Math.Clamp(pos.X - 1, 1, CanvasWrapper.Instance.Size.Width - 2)},
-            Cardinals.East => pos with {X = Math.Clamp(pos.X + 1, 1, CanvasWrapper.Instance.Size.Width - 2)},
-            Cardinals.South => pos with {Y = Math.Clamp(pos.Y + 1, 1, CanvasWrapper.Instance.Size.Height - 2)},
+            Cardinals.North => pos with { Y = Math.Clamp(pos.Y - 1, 1, CanvasWrapper.Instance.Size.Height - 2) },
+            Cardinals.West => pos with { X = Math.Clamp(pos.X - 1, 1, CanvasWrapper.Instance.Size.Width - 2) },
+            Cardinals.East => pos with { X = Math.Clamp(pos.X + 1, 1, CanvasWrapper.Instance.Size.Width - 2) },
+            Cardinals.South => pos with { Y = Math.Clamp(pos.Y + 1, 1, CanvasWrapper.Instance.Size.Height - 2) },
             _ => pos,
         };
     }
 
-    public static Point ToPoint(this (int, int) input){
+    public static Point ToPoint(this (int, int) input) {
         return new Point(input.Item1, input.Item2);
     }
 
     public static bool InBounds(this (int x, int y) t, Size size) =>
         t.x >= 0 && t.y >= 0 && t.x < size.Width && t.y < size.Height;
+
+    public static bool InBounds(this IEnumerable<Point> points, Size size) {
+        bool check = true;
+        foreach (Point p in points) {
+            check = p.X >= 0 && p.Y >= 0 && p.X < size.Width && p.Y < size.Height;
+            if (!check) return false;
+        }
+        return check;
+    }
 
     public static (int, int) Add(this (int x, int y) t, int X, int Y) => (t.x + X, t.y + Y);
 

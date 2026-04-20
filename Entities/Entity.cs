@@ -47,7 +47,7 @@ public abstract class Entity : IEntity {
 
         _playerPos = playerPos;
 
-        Point newPos = Controls.Move(s_directions[Rng.GetRandom().Next(s_directions.Length)], Position, _currentRoom, _playerPos);
+        Point newPos = Controls.Move(s_directions[Rng.GetRandom().Next(s_directions.Length)], Position, _currentRoom, _playerPos, Body);
         PrevPosition = Position;
         Position = newPos;
         EnemyMove?.Invoke(this);
