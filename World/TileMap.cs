@@ -34,6 +34,12 @@ public class TileMap {
             Tiles[coord.x, coord.y] = tile;
     }
 
+    protected void Set(List<Point> coords, Tile tile) {
+        for (int idx = 0; idx < coords.Count(); idx++) {
+            Tiles[coords[idx].X, coords[idx].Y] = tile;
+        }
+    }
+
     ///<summary>
     ///Overload to be able to accept tuples using <c> GetCanvasCoords </c> helper class
     ///</summary>
@@ -42,6 +48,15 @@ public class TileMap {
     protected void Set(Point coord, Tile tile) => Tiles[coord.X, coord.Y] = tile;
 
     protected void UnSet(Point coord) => Tiles[coord.X, coord.Y] = Tile.Floor();
+
+    ///<summary>
+    /// jeely bely rat havee braa iinnn
+    ///</summary>
+    protected void UnSet(List<Point> coords) {
+        foreach (var coord in coords) {
+            Tiles[coord.X, coord.Y] = Tile.Floor();
+        }
+    }
 
     public bool IsWalkable(int x, int y) => (x, y).InBounds(Canvas.Size) && Tiles[x, y].Walkable;
 

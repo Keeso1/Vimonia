@@ -30,6 +30,15 @@ public static class CanvasHelpers {
         }
     }
 
+    public static List<Point> GetWordBound(Point entityPos, string body) {
+        List<Point> wordBound = [];
+        for (int idx = 0; idx < body.Length; idx++) {
+            wordBound.Add(new Point(entityPos.X + idx, entityPos.Y));
+        }
+
+        return wordBound;
+    }
+
     public static Rune[,] RoomsToString(GameSettings settings, TileMap[,] Rooms, TileMap currentRoom, (int x, int y) maxDiff) //Helper func to see the grid in a clean way
     {
         int midX = Rooms.GetLength(0) / 2;
