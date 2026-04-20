@@ -97,6 +97,9 @@ public class TileMap {
         }
     }
 
+    public virtual void Activate() { }
+    public virtual void Deactivate() { }
+
     public virtual void InitMap() {
         Tiles = new Tile[Canvas.Size.Width, Canvas.Size.Height];
         Fill();

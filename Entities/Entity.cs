@@ -31,15 +31,20 @@ public abstract class Entity : IEntity {
         Type = type;
         Position = position;
         _currentRoom = currentRoom;
+    }
 
+    public void Activate() {
         GameState.PlayerInput += Update;
         GameState.CurrentState += CheckState;
+    }
 
+    public void Deactivate() {
+        GameState.PlayerInput -= Update;
+        GameState.CurrentState -= CheckState;
     }
 
     public void Dispose() {
-        GameState.PlayerInput -= Update;
-        GameState.CurrentState -= CheckState;
+        Deactivate();
     }
 
     protected virtual void Update(object? sender, Point playerPos) {

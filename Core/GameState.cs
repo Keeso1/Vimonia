@@ -15,7 +15,15 @@ public sealed class GameState(Style playerBody, MapGen floor, GameSettings setti
     public static event EventHandler<Point> PlayerInput;
     public static event Action? OnTick; //TODO: Keep or not to keep? That is the question...
 
-    public required TileMap CurrentRoom { get; set; }
+    private TileMap _currentRoom;
+    public required TileMap CurrentRoom {
+        get => _currentRoom;
+        set {
+            _currentRoom?.Deactivate();
+            _currentRoom = value;
+            _currentRoom?.Activate();
+        }
+    }
 
     public Point PrevPosition { get; set; }
 
@@ -50,10 +58,6 @@ public sealed class GameState(Style playerBody, MapGen floor, GameSettings setti
         var (roomX, roomY) = CurrentRoom.GetCoordsInFloor(floor);
         if ((roomX, roomY) == (-1, -1)) {
             throw new Exception("Current room has no coords");
-        }
-
-        if (CurrentRoom is EnemyRoom room) {
-            room.Dispose();
         }
 
         CurrentRoom = (position.X, position.Y) switch {

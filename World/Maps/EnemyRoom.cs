@@ -12,18 +12,29 @@ public class EnemyRoom : TileMap {
 
     private Canvas canvas1 { get; set; }
 
-
-    public void Dispose() {
-        foreach (var enemy in _enemyBuffer) {
-            enemy.Dispose();
-        }
-        Entity.EnemyMove -= Update;
+public override void Deactivate() {
+    foreach (var enemy in _enemyBuffer) {
+        enemy.Deactivate();
     }
+    Entity.EnemyMove -= Update;
+}
 
-    public EnemyRoom(Canvas canvas) : base(canvas) {
-        canvas1 = canvas;
-        Entity.EnemyMove += Update;
+public override void Activate() {
+    foreach (var enemy in _enemyBuffer) {
+        enemy.Activate();
     }
+    Entity.EnemyMove += Update;
+}
+
+public void Dispose() {
+    Deactivate();
+    _enemyBuffer.Clear();
+}
+
+public EnemyRoom(Canvas canvas) : base(canvas) {
+    canvas1 = canvas;
+}
+
 
 
     public Task Update(Entity enemy) {
