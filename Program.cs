@@ -5,6 +5,7 @@ using Vimonia.Utils;
 using Vimonia.Entities;
 using Sharpie;
 using Sharpie.Backend;
+using Vimonia.Interfaces;
 
 string logFilePath = "console_log.txt";
 Log.Init(logFilePath);
@@ -51,6 +52,8 @@ Player Player = new(100, 100, new() {
     Attributes = VideoAttribute.Bold,
     ColorMixture = terminal.Colors.MixColors(StandardColor.Magenta, StandardColor.Black),
 });
+
+Player.AddSkill(new DeleteSkill());
 
 var game = new GameState(
         Player,
@@ -108,6 +111,14 @@ terminal.Run(
                 break;
             case KeyEvent { Char.Value: 'l' }:
                 game.Update(Direction.Right);
+                break;
+            case KeyEvent { Char.Value: 'd' }:
+                Player.Combo += 'd';
+                game.Update(null);
+                break;
+            case KeyEvent { Char.Value: 'w' }:
+                Player.Combo += 'w';
+                game.Update(null);
                 break;
             case KeyEvent { Char.Value: 'm' }:
                 subWindow.Visible = !subWindow.Visible; //Toggle window
