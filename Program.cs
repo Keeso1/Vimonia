@@ -4,6 +4,7 @@ using Vimonia.Enums;
 using Vimonia.Utils;
 using Sharpie;
 using Sharpie.Backend;
+using Vimonia.Interfaces;
 
 string logFilePath = "console_log.txt";
 Log.Init(logFilePath);
@@ -46,6 +47,13 @@ Rng.Init(CanvasWrapper.Instance, 4);
 
 MapGen floor = new(CanvasWrapper.Instance, settings);
 
+Player Player = new(100, 100, new() {
+    Attributes = VideoAttribute.Bold,
+    ColorMixture = terminal.Colors.MixColors(StandardColor.Magenta, StandardColor.Black),
+});
+
+Player.AddSkill(new DeleteSkill());
+
 var game = new GameState(
     new() {
         Attributes = VideoAttribute.Bold,
@@ -63,7 +71,7 @@ var game = new GameState(
 
 
 
-game.Update(null);
+game.Update(null, null);
 
 terminal.Repeat(
     t => {
@@ -105,6 +113,14 @@ terminal.Run(
                 break;
             case KeyEvent { Char.Value: 'l' }:
                 game.Update(Direction.Right);
+                break;
+            case KeyEvent { Char.Value: 'd' }:
+                Player.Combo += 'd';
+                game.Update(null);
+                break;
+            case KeyEvent { Char.Value: 'w' }:
+                Player.Combo += 'w';
+                game.Update(null);
                 break;
             case KeyEvent { Char.Value: 'm' }:
                 subWindow.Visible = !subWindow.Visible; //Toggle window

@@ -7,6 +7,8 @@ using Vimonia.World;
 using Sharpie;
 using System.Text;
 using Vimonia.World.Maps;
+using Vimonia.Entities;
+using Vimonia.Interfaces;
 
 namespace Vimonia.Core;
 
@@ -45,6 +47,19 @@ public sealed class GameState(Style playerBody, MapGen floor, GameSettings setti
         Canvas.Glyph(position, GameConstants.Player, playerBody); //Update player position
         PrevPosition = position;
 
+        if (CurrentRoom.Tiles[position.X, position.Y].Entity != null) {
+            player.TakeDamage(10);
+            Log.Info($"Health: {player.Health}");
+        }
+
+        if (player.Combo == "dw") {
+            player.UseSkill("dw");
+            player.Combo = "";
+        }
+
+        if (player.Combo.Length > 2) {
+            player.Combo = "";
+        }
 
         Rune[,] map = CanvasHelpers.RoomsToString(settings, floor.Rooms, CurrentRoom, GetCanvasCoords.GetMaxDimensions(floor.Rooms));
         CanvasHelpers.RenderToMap(MinimapCanvas, map, terminal);

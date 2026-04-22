@@ -8,7 +8,7 @@ namespace Vimonia.Entities;
 
 public sealed class Player : IEntity {
 
-    public event Action<ISkill> UsedSkill;
+    public event Action<ISkill, Point> UsedSkill;
 
     public EntityType Type { get; set; }
     public int Health { get; private set; }
@@ -16,12 +16,16 @@ public sealed class Player : IEntity {
     public bool IsDead => Health <= 0;
     public Dictionary<string, ISkill> Skills { get; private set; } = [];
     public Point Position { get; set; }
+    public Style Style { get; set; }
+    public string Combo { get; set; }
 
     public Player(int health, int maxHealth, List<ISkill>? skills = null) {
         Health = health;
         MaxHealth = maxHealth;
         if (skills != null) AddSkills(skills);
         Type = EntityType.Player;
+        Style = style;
+        Combo = "";
 
         GameState.PlayerInput += OnPlayerInput;
         GameState.OnTick += Update;
@@ -41,7 +45,7 @@ public sealed class Player : IEntity {
 
     public void UseSkill(string combo) {
         if (Skills.TryGetValue(combo, out var skill))
-            UsedSkill?.Invoke(skill);
+            UsedSkill?.Invoke(skill, Position);
     }
 
     public void AddSkills(List<ISkill> skills) {
