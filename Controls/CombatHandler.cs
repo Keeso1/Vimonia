@@ -14,6 +14,9 @@ public class CombatHandler {
     private TileMap CurrentRoom { get; set; }
     private Player _player { get; set; }
     public CombatHandler(Player player) {
+        if (_combatHandler != null) {
+            throw new InvalidOperationException("CombatHandler already initialized");
+        }
         _player = player;
         _combatHandler = this;
         Entities.Player.UsedSkill += onSkillUse;

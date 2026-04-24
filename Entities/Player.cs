@@ -45,10 +45,12 @@ public sealed class Player : IEntity {
     }
 
     public void UseSkill(string combo) {
-        if (Skills.TryGetValue(combo, out var skill))
+        if (Skills.TryGetValue(combo, out var skill)) {
+
             UsedSkill?.Invoke(skill, Position);
+            Log.Info($"Used skill: {skill.Type}");
+        }
         Combo = "";
-        Log.Info($"Used skill: {skill.Type}");
         Log.Info($"Combo: {Combo}");
 
     }
