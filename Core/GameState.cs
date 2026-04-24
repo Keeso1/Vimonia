@@ -51,6 +51,7 @@ public sealed class GameState(Player player, MapGen floor, GameSettings settings
         CurrentRoom.RenderToCanvas();
         Canvas.Glyph(position, GameConstants.Player, player.Style); //Update player position
         PrevPosition = position;
+        PlayerInput?.Invoke(this, PrevPosition);
 
         if (CurrentRoom.Tiles[position.X, position.Y].Entity != null) {
             player.TakeDamage(10);
@@ -68,7 +69,6 @@ public sealed class GameState(Player player, MapGen floor, GameSettings settings
 
         Rune[,] map = CanvasHelpers.RoomsToString(settings, floor.Rooms, CurrentRoom, GetCanvasCoords.GetMaxDimensions(floor.Rooms));
         CanvasHelpers.RenderToMap(MinimapCanvas, map, terminal);
-        PlayerInput?.Invoke(this, PrevPosition);
         OnTick?.Invoke();
     }
 
