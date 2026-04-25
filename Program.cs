@@ -28,7 +28,8 @@ var windowHeight = windowWidth / 2;
 var window = terminal.Screen.Window(new(1, 1, windowWidth, windowHeight));
 
 //MINIMAP TESTING
-var subWindow = terminal.Screen.Window(new(window.Size.Width + ((window.Size.Width / 4) / 2), ((window.Size.Width / 4) / 2), window.Size.Width / 4, window.Size.Height / 4));
+var safeX = Math.Min(0 + windowWidth, terminal.Screen.Size.Width - (windowWidth / 4));
+var subWindow = terminal.Screen.Window(new(safeX, ((windowWidth / 4) / 2), windowWidth / 4, windowHeight / 4));
 
 window.Background = (new(' '),
     new() {
