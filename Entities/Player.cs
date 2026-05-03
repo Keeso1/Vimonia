@@ -11,6 +11,10 @@ public sealed class Player : IEntity {
 
     public static event Action<ISkill, Point> UsedSkill;
 
+    public static void ResetEvents() {
+        UsedSkill = null!;
+    }
+
     public EntityType Type { get; set; }
     public int Health { get; private set; }
     public int MaxHealth { get; private set; }

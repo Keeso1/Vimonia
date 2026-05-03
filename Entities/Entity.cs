@@ -67,9 +67,7 @@ public abstract class Entity : IEntity {
 
     protected void CheckState(object? sender, GamePhase phase) {
         if (phase is GamePhase.Running) return;
-        if (phase is GamePhase.GameOver || phase is GamePhase.Victory) {
-            Dispose();
-        }
+        Dispose();
     }
 }
 
