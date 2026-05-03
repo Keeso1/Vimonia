@@ -17,6 +17,12 @@ public sealed class GameState(Canvas HeaderCanvas, Player player, MapGen floor, 
     public static event EventHandler<Point> PlayerInput;
     public static event Action? OnTick; //TODO: Keep or not to keep? That is the question...
 
+    public static void ResetEvents() {
+        CurrentState = null!;
+        PlayerInput = null!;
+        OnTick = null!;
+    }
+
     private TileMap _currentRoom;
     public required TileMap CurrentRoom {
         get => _currentRoom;
@@ -46,6 +52,11 @@ public sealed class GameState(Canvas HeaderCanvas, Player player, MapGen floor, 
         if (CurrentRoom.Tiles[position.X, position.Y].Entity != null) {
             player.TakeDamage(10);
             Log.Info($"Health: {player.Health}");
+        }
+
+        if (player.IsDead) {
+            CurrentState?.Invoke(this, GamePhase.Menu);
+            return;
         }
 
         CurrentRoom.RenderToCanvas();
