@@ -18,7 +18,9 @@ public sealed class Player : IEntity {
     public EntityType Type { get; set; }
     public int Health { get; private set; }
     public int MaxHealth { get; private set; }
-    public bool IsDead => Health <= 0;
+    public float TimeLeft { get; private set; }
+    public float MaxTime { get; private set; }
+    public bool IsDead => Health <= 0 || TimeLeft <= 0;
     public Dictionary<string, ISkill> Skills { get; private set; } = [];
     public Point Position { get; set; }
     public Style Style { get; set; }
@@ -27,6 +29,8 @@ public sealed class Player : IEntity {
     public Player(int health, int maxHealth, Style style, List<ISkill>? skills = null) {
         Health = health;
         MaxHealth = maxHealth;
+        MaxTime = 60.0f;
+        TimeLeft = MaxTime;
         if (skills != null) AddSkills(skills);
         Type = EntityType.Player;
         Style = style;
@@ -73,6 +77,16 @@ public sealed class Player : IEntity {
     public void Heal(int heal) {
         if (Health < MaxHealth || !IsDead)
             Health = Math.Min(MaxHealth, Health + heal);
+    }
+
+    public void AddTime(float seconds) {
+        if (TimeLeft < MaxTime || !IsDead)
+            TimeLeft = Math.Min(MaxTime, TimeLeft + seconds);
+    }
+
+    public void DecrementTime(float seconds) {
+        if (!IsDead)
+            TimeLeft = Math.Max(0, TimeLeft - seconds);
     }
 
     private void Unsub() {

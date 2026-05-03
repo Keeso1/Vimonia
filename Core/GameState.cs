@@ -80,6 +80,13 @@ public sealed class GameState(Canvas HeaderCanvas, Player player, MapGen floor, 
         OnTick?.Invoke();
     }
 
+    public void Tick(float deltaTime) {
+        player.DecrementTime(deltaTime);
+        if (player.IsDead) {
+            CurrentState?.Invoke(this, GamePhase.Menu);
+        }
+    }
+
 
     public Point EnterNewRoom(Point position) {
 

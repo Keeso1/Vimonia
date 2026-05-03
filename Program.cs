@@ -115,7 +115,11 @@ terminal.Repeat(
 
         var currCombo = Player.Combo.Length > 0 ? Player.Combo : "  ";
         var currHealth = Player.Health;
+        var currTime = Player.TimeLeft;
 
+        game.Tick(0.050f);
+
+        headerCanvas.Text(new(40, 0), $"Timer: {currTime:F1}s ", Canvas.Orientation.Horizontal, Style.Default);
         headerCanvas.Text(new(20, 0), $"Health: {currHealth}/{Player.MaxHealth} ", Canvas.Orientation.Horizontal, Style.Default);
         headerCanvas.Text(new(0, 0), $"Combo: {currCombo}", Canvas.Orientation.Horizontal, Style.Default);
         headerCanvas.DrawOnto(t.Header, new Rectangle(Point.Empty, t.Header.Size), Point.Empty);
