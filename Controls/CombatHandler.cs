@@ -50,6 +50,7 @@ public class CombatHandler {
             entity.Health = entity.Body.Length;
             CurrentRoom.Set(lengthToRemove, Tile.Floor());
             _player.Heal(lengthToRemove.Count * 10);
+            _player.AddTime(lengthToRemove.Count * 1.0f);
             Log.Info($"Entity health: {entity.Health}, Tile Text Prop: {CurrentRoom.Tiles[playerPos.X, playerPos.Y].Text}");
 
             if (entity.Health <= 0) {
