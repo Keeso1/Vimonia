@@ -19,8 +19,6 @@ var terminal = new Terminal(
     new TerminalOptions(UseColors: true, CaretMode: CaretMode.Invisible, UseMouse: false, ManagedWindows: true, AllocateHeader: true) { AllocateHeader = true }
 );
 
-
-
 var availableWidth = terminal.Screen.Size.Width - 2;
 var availableHeight = terminal.Screen.Size.Height - 2;
 var windowWidth = Math.Min(availableWidth, availableHeight * 2);
@@ -50,38 +48,63 @@ Canvas minimapCanvas = new(subWindow.Size);
 
 Rng.Init(CanvasWrapper.Instance, 4);
 
-MapGen floor = new(CanvasWrapper.Instance, settings);
+MapGen floor = null!;
+Player Player = null!;
+CombatHandler combatHandler = null!;
+GameState game = null!;
+GamePhase currentPhase = GamePhase.Menu;
 
-Player Player = new(100, 100, new() {
-    Attributes = VideoAttribute.Bold,
-    ColorMixture = terminal.Colors.MixColors(StandardColor.Magenta, StandardColor.Black),
-});
+void StartNewGame() {
+    GameState.ResetEvents();
+    Player.ResetEvents();
+    
+    // Re-subscribe the menu phase handler
+    GameState.CurrentState += (s, phase) => {
+        currentPhase = phase;
+    };
 
-CombatHandler combatHandler = new(Player);
-Player.AddSkill(new DeleteSkill());
+    floor = new(CanvasWrapper.Instance, settings);
+    Player = new(100, 100, new() {
+        Attributes = VideoAttribute.Bold,
+        ColorMixture = terminal.Colors.MixColors(StandardColor.Magenta, StandardColor.Black),
+    });
+    combatHandler = new(Player);
+    Player.AddSkill(new DeleteSkill());
+    game = new GameState(
+        new Canvas(terminal.Header.Size),
+        Player,
+        floor,
+        settings,
+        terminal
+    ) {
+        Canvas = CanvasWrapper.Instance,
+        PrevPosition = new(CanvasWrapper.Instance.Size.Width / 2, CanvasWrapper.Instance.Size.Height / 2),
+        CurrentRoom = floor.Rooms[settings.NumberOfRooms + 1, settings.NumberOfRooms + 1],
+        MinimapCanvas = minimapCanvas
+    };
+}
+
+StartNewGame();
 
 Canvas headerCanvas = new(terminal.Header.Size);
 
-var game = new GameState(
-        headerCanvas,
-        Player,
-    floor,
-    settings,
-    terminal
-) {
-    Canvas = CanvasWrapper.Instance,
-    PrevPosition = new(CanvasWrapper.Instance.Size.Width / 2, CanvasWrapper.Instance.Size.Height / 2),
-    CurrentRoom = floor.Rooms[settings.NumberOfRooms + 1, settings.NumberOfRooms + 1],
-    MinimapCanvas = minimapCanvas
-};
+TitleScreen titleScreen = new(CanvasWrapper.Instance);
 
-
-
-game.Update(null);
-// IAsciiFont figFont = await FigletFont.LoadAsync("Assets/fonts/small.flf");
+// Initial render for title screen
+titleScreen.Render();
 
 terminal.Repeat(
     t => {
+        if (currentPhase == GamePhase.Menu) {
+            titleScreen.Render();
+            CanvasWrapper.Instance.DrawOnto(
+                window,
+                new Rectangle(new Point(0, 0), CanvasWrapper.Instance.Size),
+                new Point(0, 0)
+            );
+            t.Screen.Refresh();
+            return Task.CompletedTask;
+        }
 
         t.Header.Background = ((new(' '),
         new() {
@@ -92,8 +115,6 @@ terminal.Repeat(
 
         var currCombo = Player.Combo.Length > 0 ? Player.Combo : "  ";
         var currHealth = Player.Health;
-
-
 
         headerCanvas.Text(new(20, 0), $"Health: {currHealth}/{Player.MaxHealth} ", Canvas.Orientation.Horizontal, Style.Default);
         headerCanvas.Text(new(0, 0), $"Combo: {currCombo}", Canvas.Orientation.Horizontal, Style.Default);
@@ -123,6 +144,38 @@ terminal.Repeat(
 
 terminal.Run(
     (Term, Tevent) => {
+        if (currentPhase == GamePhase.Menu) {
+            switch (Tevent) {
+                case KeyEvent { Char.Value: 'q' }:
+                    Log.Shutdown();
+                    Environment.Exit(0);
+                    break;
+                case KeyEvent { Char.Value: 'k' }:
+                    titleScreen.MoveUp();
+                    break;
+                case KeyEvent { Char.Value: 'j' }:
+                    titleScreen.MoveDown();
+                    break;
+                case KeyEvent k when k.Key == Key.Return || 
+                                     (k.Key == Key.Character && (k.Char.Value == '\n' || k.Char.Value == '\r' || k.Char.Value == 10 || k.Char.Value == 13 || k.Char.Value == 77)):
+                    if (titleScreen.SelectedIndex == 0) {
+                        Log.Info("Starting game...");
+                        StartNewGame();
+                        currentPhase = GamePhase.Running;
+                        game.Update(null); // Initial game render
+                    } else {
+                        Log.Info("Exiting game...");
+                        Log.Shutdown();
+                        Environment.Exit(0);
+                    }
+                    break;
+                case KeyEvent k:
+                    Log.Info($"Key pressed in Menu: Key={k.Key}, KeyInt={(int)k.Key}, CharValue={(k.Key == Key.Character ? (int)k.Char.Value : "N/A")}, Rune={k.Char}");
+                    break;
+            }
+            return Task.FromResult(true);
+        }
+
         switch (Tevent) {
             case KeyEvent { Char.Value: 'q' }:
                 Log.Shutdown();
