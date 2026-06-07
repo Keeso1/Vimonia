@@ -1,13 +1,13 @@
 using System.Drawing;
-using Vimonia.Core;
-using Vimonia.Enums;
-using Vimonia.Utils;
-using Vimonia.Entities;
 using Sharpie;
-using Sharpie.Backend;
-using Vimonia.Interfaces;
 using Sharpie.Abstractions;
+using Sharpie.Backend;
 using Sharpie.Font;
+using Vimonia.Core;
+using Vimonia.Entities;
+using Vimonia.Enums;
+using Vimonia.Interfaces;
+using Vimonia.Utils;
 
 string logFilePath = "console_log.txt";
 Log.Init(logFilePath);
@@ -57,7 +57,7 @@ GamePhase currentPhase = GamePhase.Menu;
 void StartNewGame() {
     GameState.ResetEvents();
     Player.ResetEvents();
-    
+
     // Re-subscribe the menu phase handler
     GameState.CurrentState += (s, phase) => {
         currentPhase = phase;
@@ -119,9 +119,13 @@ terminal.Repeat(
 
         game.Tick(0.050f);
 
-        headerCanvas.Text(new(40, 0), $"Timer: {currTime:F1}s ", Canvas.Orientation.Horizontal, Style.Default);
-        headerCanvas.Text(new(20, 0), $"Health: {currHealth}/{Player.MaxHealth} ", Canvas.Orientation.Horizontal, Style.Default);
-        headerCanvas.Text(new(0, 0), $"Combo: {currCombo}", Canvas.Orientation.Horizontal, Style.Default);
+        var timerText = $"Timer: {currTime:F1}s ";
+        var healthText = $"Health: {currHealth}/{Player.MaxHealth} ";
+        var comboText = $"Combo: {currCombo}";
+
+        headerCanvas.Text(new(0, 0), comboText, Canvas.Orientation.Horizontal, Style.Default);
+        headerCanvas.Text(new(headerCanvas.Size.Width / 2 - healthText.Length / 2, 0), healthText, Canvas.Orientation.Horizontal, Style.Default);
+        headerCanvas.Text(new(headerCanvas.Size.Width - timerText.Length, 0), timerText, Canvas.Orientation.Horizontal, Style.Default);
         headerCanvas.DrawOnto(t.Header, new Rectangle(Point.Empty, t.Header.Size), Point.Empty);
 
         t.Header.Refresh();
@@ -160,7 +164,7 @@ terminal.Run(
                 case KeyEvent { Char.Value: 'j' }:
                     titleScreen.MoveDown();
                     break;
-                case KeyEvent k when k.Key == Key.Return || 
+                case KeyEvent k when k.Key == Key.Return ||
                                      (k.Key == Key.Character && (k.Char.Value == '\n' || k.Char.Value == '\r' || k.Char.Value == 10 || k.Char.Value == 13 || k.Char.Value == 77)):
                     if (titleScreen.SelectedIndex == 0) {
                         Log.Info("Starting game...");

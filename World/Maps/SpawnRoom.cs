@@ -1,5 +1,5 @@
-using Vimonia.Enums;
 using Sharpie;
+using Vimonia.Enums;
 
 namespace Vimonia.World.Maps;
 

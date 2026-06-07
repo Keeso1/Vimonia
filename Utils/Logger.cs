@@ -1,6 +1,6 @@
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using System.Runtime.CompilerServices;
 
 namespace Vimonia.Utils;
 

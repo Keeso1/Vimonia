@@ -1,7 +1,6 @@
-using Vimonia.Enums;
 using Sharpie;
-
 using Vimonia.Core;
+using Vimonia.Enums;
 
 namespace Vimonia.World.Maps;
 

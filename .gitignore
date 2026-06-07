@@ -1,13 +1,18 @@
-./bin/
-./obj/
-/obj/
-/bin/
-/console_log.txt
-./console_log.txt
-/.vscode
-/console_log.txt
-/console_log.txt
-/Vimonia.sln
-/.agents/skills/caveman/SKILL.md
-/.agents/
-/.agents/skills/caveman
+# Build folders
+bin/
+obj/
+
+# User-specific files
+.vscode/
+.idea/
+*.swp
+*.user
+*.sln
+*.suo
+
+# Output and logs
+run_output.txt
+console_log.txt
+
+# Gemini CLI
+.agents/
