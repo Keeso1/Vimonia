@@ -4,10 +4,10 @@ Vimonia is a terminal-based roguelike game inspired by Vim keybindings. Navigate
 
 ## Features
 
-- **Vim-inspired Combat**: Use familiar key combinations (like `dw`) to perform skills.
+- **Vim-inspired Combat**: Use vim key combinations (like `dw`) to perform skills. So far dw is the only skill.
 - **Procedural Generation**: Every run features a unique floor layout.
-- **Terminal UI**: Built using the `Sharpie` library for a rich terminal experience.
-- **Minimap**: Keep track of your exploration with an integrated minimap.
+- **Terminal UI**: Built using the `Sharpie` library.
+- **Minimap**: Press 'M' to toggle minimap visibility.
 
 ## Getting Started
 
@@ -17,24 +17,19 @@ Vimonia is a terminal-based roguelike game inspired by Vim keybindings. Navigate
 
 ### Running the Game
 
-1. Clone the repository.
-2. Navigate to the project directory.
-3. Run the game using the .NET CLI:
-
-   ```bash
-   dotnet run
-   ```
+1. Download the executable from the release
+2. Run it.
 
 ## Controls
 
 - **Movement**: Standard Vim keys (`h`, `j`, `k`, `l`) or Arrow keys.
-- **Skills**: Perform combinations to trigger powerful abilities.
+- **Skills**: Perform combinations to trigger abilities (currently only `dw`.
 - **Quit**: Press `q` or `Ctrl+C` to exit.
 
 ## Development
 
 Vimonia is written in C# and utilizes the following libraries:
-- [Sharpie](https://github.com/sh4rpie/sharpie): A high-level Curses wrapper for .NET.
+- [Sharpie](https://github.com/pavkam/sharpie): A high-level Curses wrapper for .NET.
 
 ## License
 
